@@ -1,7 +1,7 @@
 <div
   class="player-container"
   [ngClass]="[player.isFlipped ? 'flipped' : '', extraClass]"
-  [ngStyle]="{ 'background-color': player.color }"
+  [ngStyle]="{ 'background': player.color }"
 >
   <!-- 1. MODALITÀ NORMALE -->
   <ng-container *ngIf="!isDamageMode()">

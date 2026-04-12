@@ -31,10 +31,10 @@ export interface GameSettings {
 }
 
 export const MTG_COLORS = [
-  '#F4F1ED', // White (Off-white/Cream)
-  '#4A708B', // Blue (Muted Slate)
-  '#363636', // Black (Dark Charcoal)
-  '#B24A4A', // Red (Muted Crimson)
-  '#557A55', // Green (Muted Forest)
-  '#999285', // Colorless (Warm Grey)
+  'linear-gradient(135deg, #7C7360 0%, #302C23 100%)', // White (Dark Golden Pearl)
+  'linear-gradient(135deg, #214F75 0%, #0C1E2E 100%)', // Blue (Deep Sea)
+  'linear-gradient(135deg, #2A2130 0%, #0D0A0F 100%)', // Black (Dark Violet/Charcoal)
+  'linear-gradient(135deg, #7A2424 0%, #2B0A0A 100%)', // Red (Dark Blood)
+  'linear-gradient(135deg, #285934 0%, #0F2414 100%)', // Green (Deep Jungle)
+  'linear-gradient(135deg, #694C2B 0%, #26190B 100%)', // Colorless (Dark Amber)
 ];
