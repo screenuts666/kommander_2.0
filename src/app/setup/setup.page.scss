@@ -21,7 +21,9 @@
     height: 130px;
     border-radius: 24px;
     margin-bottom: 16px;
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 255, 255, 0.15);
+    box-shadow:
+      0 12px 30px rgba(0, 0, 0, 0.8),
+      0 0 20px rgba(0, 255, 255, 0.15);
     object-fit: cover;
   }
 
@@ -71,7 +73,7 @@
   --border-color: #1f1f1f;
   --padding-start: 0;
   --inner-padding-end: 0;
-  
+
   .subtle-icon {
     color: #555555;
     font-size: 20px;
@@ -98,10 +100,39 @@
   letter-spacing: 2px;
   height: 56px;
   margin: 0;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .start-btn:active {
   transform: scale(0.97);
   --box-shadow: 0 4px 12px rgba(255, 255, 255, 0.2);
+}
+
+/* Footer styles handled globally in global.scss */
+
+.ios-install-prompt {
+  position: fixed;
+  bottom: 80px;
+  left: 20px;
+  right: 20px;
+  background: #1a1a1a;
+  color: #ffffff;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  z-index: 1000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  border: 1px solid #333;
+
+  .close-prompt {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-weight: 800;
+    color: #666;
+    padding: 4px;
+  }
 }

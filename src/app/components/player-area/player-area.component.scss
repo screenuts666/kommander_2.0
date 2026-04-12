@@ -194,7 +194,18 @@
   flex-direction: column;
   justify-content: space-between;
   padding: 32px 24px;
-  background: inherit; /* adopts player background */
+  background-color: inherit; /* adopts player color */
+  background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)); /* Adds depth but maintains opacity */
+  
+  /* Ensure a solid fallback to hide everything below */
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: inherit;
+    z-index: -1;
+    filter: brightness(0.8); /* Slightly darker to distinguish the mode */
+  }
 }
 
 /* --- TARGET UI --- */
@@ -221,11 +232,20 @@
   }
 }
 
+.mode-content-center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
 .target-bottom-bar {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
+  padding-bottom: 8px; /* Extra breathing space for the exit button */
 
   .life-reminder {
     display: flex;
@@ -468,6 +488,84 @@
     height: 50px;
     font-weight: 800;
     letter-spacing: 2px;
+  }
+}
+
+/* Floating Hint Logic */
+.floating-hint {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+  font-size: 3.5rem;
+  font-weight: 900;
+  color: #4ade80; /* Success Green */
+  text-shadow: 0 0 20px rgba(74, 222, 128, 0.6), 0 4px 10px rgba(0,0,0,0.8);
+  z-index: 100;
+  animation: floatUp 1.5s ease-out forwards;
+  
+  &.negative {
+    color: #f87171; /* Error Red */
+    text-shadow: 0 0 20px rgba(248, 113, 113, 0.6), 0 4px 10px rgba(0,0,0,0.8);
+  }
+}
+
+@keyframes floatUp {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+  20% { opacity: 1; transform: translate(-50%, -80%) scale(1.2); }
+  80% { opacity: 1; transform: translate(-50%, -120%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -150%) scale(0.8); }
+}
+
+/* Commander Tax UI */
+.commander-tax-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  .tax-pill {
+    display: flex;
+    align-items: center;
+    background: #000;
+    border-radius: 30px;
+    padding: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+    width: 160px;
+    height: 50px;
+
+    .tax-btn {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.5rem;
+      flex: 1;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      &:active { opacity: 0.5; }
+    }
+
+    .tax-val {
+      font-size: 1.4rem;
+      font-weight: 800;
+      color: white;
+      min-width: 40px;
+      text-align: center;
+    }
+  }
+
+  .tax-info {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 }
 

@@ -4,9 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
   IonContent,
-  IonHeader,
-  IonTitle,
   IonToolbar,
+  IonFooter,
   IonList,
   IonItem,
   IonSelect,
@@ -14,8 +13,14 @@ import {
   IonButton,
   IonIcon,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import { heartOutline, peopleOutline, gridOutline } from 'ionicons/icons';
+import {
+  heartOutline,
+  peopleOutline,
+  gridOutline,
+  diceOutline,
+  downloadOutline,
+} from 'ionicons/icons';
+import { HostListener } from '@angular/core';
 import { GameService } from '../services/game.service';
 import {
   StartingLife,
@@ -23,6 +28,7 @@ import {
   LayoutType,
   GameSettings,
 } from '../models/game.model';
+import { addIcons } from 'ionicons';
 
 @Component({
   selector: 'app-setup',
@@ -39,6 +45,8 @@ import {
     IonSelectOption,
     IonButton,
     IonIcon,
+    IonFooter,
+    IonToolbar,
   ],
 })
 export class SetupPage {
@@ -46,15 +54,59 @@ export class SetupPage {
   public numPlayers: NumPlayers;
   public layout: LayoutType;
 
+  public deferredPrompt: any;
+  public showInstallButton = false;
+  public isIos = false;
+  public showIosPrompt = false;
+
   private gameService = inject(GameService);
   private router = inject(Router);
 
   constructor() {
-    addIcons({ heartOutline, peopleOutline, gridOutline });
+    addIcons({
+      heartOutline,
+      peopleOutline,
+      gridOutline,
+      diceOutline,
+      downloadOutline,
+    });
     const currentSettings = this.gameService.settings();
     this.startingLife = currentSettings.startingLife;
     this.numPlayers = currentSettings.numPlayers;
     this.layout = currentSettings.layout;
+  }
+
+  ngOnInit() {
+    // Basic iOS detection for specific PWA fallback
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    this.isIos = /iphone|ipad|ipod/.test(userAgent);
+  }
+
+  @HostListener('window:beforeinstallprompt', ['$event'])
+  onbeforeinstallprompt(e: Event) {
+    // Previene il mini-infobar default su mobile
+    e.preventDefault();
+    this.deferredPrompt = e;
+    this.showInstallButton = true;
+  }
+
+  async installPwa() {
+    if (this.isIos) {
+      this.showIosPrompt = true;
+      return;
+    }
+    if (this.deferredPrompt) {
+      this.deferredPrompt.prompt();
+      const { outcome } = await this.deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        this.showInstallButton = false;
+      }
+      this.deferredPrompt = null;
+    }
+  }
+
+  openDiceApp() {
+    window.open('https://tap-roulette-app.web.app/', '_blank');
   }
 
   // Dynamic layout options based on players

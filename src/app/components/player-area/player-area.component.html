@@ -3,7 +3,7 @@
   [ngClass]="[player.isFlipped ? 'flipped' : '', extraClass]"
   [ngStyle]="{ background: player.color }"
 >
-  <div class="player-header">
+  <div class="player-header" [hidden]="isDamageMode() || isPoisonModeActive()">
     @if (isMonarch()) {
       <ion-icon class="status-icon monarch-icon" name="star-outline"></ion-icon>
     }
@@ -24,7 +24,7 @@
   </div>
 
   <!-- 1. MODALITÀ NORMALE -->
-  @if (!isDamageMode() && !isPoisonModeActive()) {
+  <div class="normal-mode-ui" [hidden]="isDamageMode() || isPoisonModeActive()">
     <div class="action-buttons-container">
       @if (player.poison > 0) {
         <div class="poison-btn-wrapper" (click)="enterPoisonMode($event)">
@@ -53,12 +53,32 @@
     </div>
 
     <!-- Tzone -->
-    <div class="touch-zone plus" (click)="increment()"></div>
+    <div 
+      class="touch-zone plus" 
+      (click)="handleTap(1, $event)"
+      (mousedown)="startHold(1)"
+      (mouseup)="endHold()"
+      (touchstart)="startHold(1)"
+      (touchend)="endHold()"
+    ></div>
     <div class="life-display">
       <span class="life-total">{{ player.life }}</span>
     </div>
-    <div class="touch-zone minus" (click)="decrement()"></div>
-  }
+    <div 
+      class="touch-zone minus" 
+      (click)="handleTap(-1, $event)"
+      (mousedown)="startHold(-1)"
+      (mouseup)="endHold()"
+      (touchstart)="startHold(-1)"
+      (touchend)="endHold()"
+    ></div>
+
+    @if (recentDelta() !== 0) {
+      <div class="floating-hint" [class.negative]="recentDelta() < 0">
+        {{ recentDelta() > 0 ? '+' : '' }}{{ recentDelta() }}
+      </div>
+    }
+  </div>
 
   <!-- 2. MODALITÀ DANNO COMANDANTE -->
   @if (isTarget()) {
@@ -153,29 +173,34 @@
     <div class="target-mode-wrapper poison-theme">
       <div class="target-header">
         <span class="target-name">DANNO DA VELENO</span>
+        <span class="target-subtitle">MODIFICA SEGNALINI</span>
       </div>
-      <div class="damage-pill" style="align-self: center; margin-top: 15px">
-        <button
-          class="pill-btn minus-btn"
-          (click)="changePoisonDirect(-1, $event)"
-        >
-          -
-        </button>
-        <span class="pill-val poison-val">{{ player.poison }}</span>
-        <button
-          class="pill-btn plus-btn"
-          (click)="changePoisonDirect(1, $event)"
-        >
-          +
-        </button>
+
+      <div class="mode-content-center">
+        <div class="damage-pill">
+          <button
+            class="pill-btn minus-btn"
+            (click)="changePoisonDirect(-1, $event)"
+          >
+            -
+          </button>
+          <span class="pill-val poison-val">{{ player.poison }}</span>
+          <button
+            class="pill-btn plus-btn"
+            (click)="changePoisonDirect(1, $event)"
+          >
+            +
+          </button>
+        </div>
       </div>
+
       <div class="target-bottom-bar">
-        <div class="life-reminder" style="visibility: hidden">
-          <ion-icon name="heart"></ion-icon>
-          <span>0</span>
+        <div class="life-reminder" style="opacity: 0.3">
+          <ion-icon name="skull"></ion-icon>
+          <span>{{ player.poison }}</span>
         </div>
         <div class="exit-btn poison-exit" (click)="exitPoisonMode($event)">
-          <ion-icon name="checkmark-circle"></ion-icon>
+          <ion-icon name="chevron-down-outline"></ion-icon>
         </div>
       </div>
     </div>
@@ -264,6 +289,16 @@
                 Prendi Iniziativa
               </ion-button>
             }
+          </div>
+
+          <div class="commander-tax-section">
+            <span class="picker-title">Commander Tax</span>
+            <div class="tax-pill">
+              <button class="tax-btn" (click)="updateTax(-2, $event)">-</button>
+              <span class="tax-val">{{ player.commanderTax }}</span>
+              <button class="tax-btn" (click)="updateTax(2, $event)">+</button>
+            </div>
+            <span class="tax-info">Costo addizionale: {{ player.commanderTax }}</span>
           </div>
 
           <ion-button expand="block" class="save-btn" (click)="saveSettings()"

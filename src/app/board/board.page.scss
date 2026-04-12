@@ -9,30 +9,7 @@ ion-content {
   position: relative;
 }
 
-/* Minimalist Footer */
-.minimal-footer {
-  --background: #060606;
-  --min-height: 55px;
-  border-top: 1px solid #222;
-}
-
-.footer-buttons {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 0 16px;
-  height: 55px;
-  
-  ion-button {
-    margin: 0;
-    --padding-start: 12px;
-    --padding-end: 12px;
-    
-    ion-icon {
-      font-size: 26px;
-    }
-  }
-}
+/* Minimalist Footer handled globally in global.scss */
 
 /* Base Layout Types */
 
@@ -122,4 +99,59 @@ ion-content {
   ion-spinner {
     transform: scale(1.5);
   }
+}
+
+/* History Modal */
+.history-modal {
+  --background: #121212;
+  --border-radius: 20px 20px 0 0;
+  
+  ion-toolbar {
+    --background: #1a1a1a;
+    --color: white;
+    text-align: center;
+    border-bottom: 1px solid #333;
+  }
+}
+
+.history-content {
+  --background: #121212;
+  --padding-top: 10px;
+}
+
+.log-container {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.log-entry {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background: #1a1a1a;
+  border-radius: 12px;
+  border: 1px solid #2a2a2a;
+  
+  .log-time {
+    font-size: 0.75rem;
+    color: #888;
+    font-family: monospace;
+    min-width: 60px;
+  }
+  
+  .log-msg {
+    color: #eee;
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+}
+
+.empty-log {
+  text-align: center;
+  color: #666;
+  margin-top: 40px;
+  font-style: italic;
 }

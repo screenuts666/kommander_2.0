@@ -142,6 +142,12 @@ export class PlayerAreaComponent {
   public tempName = signal('');
   public tempColor = signal('');
 
+  // Livello 3: UX Feedbacks and Gestures
+  public recentDelta = signal(0);
+  private deltaTimer: any;
+  private holdTimer: any;
+  private isHolding = false;
+
   get MTG_COLORS() {
     return MTG_COLORS;
   }
@@ -150,6 +156,7 @@ export class PlayerAreaComponent {
     if (this.player && !this.isDamageMode() && !this.isPoisonModeActive()) {
       await Haptics.impact({ style: ImpactStyle.Light });
       this.gameService.updatePlayerLife(this.player.id, 1);
+      this.trackDelta(1);
     }
   }
 
@@ -157,7 +164,46 @@ export class PlayerAreaComponent {
     if (this.player && !this.isDamageMode() && !this.isPoisonModeActive()) {
       await Haptics.impact({ style: ImpactStyle.Light });
       this.gameService.updatePlayerLife(this.player.id, -1);
+      this.trackDelta(-1);
     }
+  }
+
+  private trackDelta(delta: number) {
+    this.recentDelta.update((v) => v + delta);
+    if (this.deltaTimer) clearTimeout(this.deltaTimer);
+    this.deltaTimer = setTimeout(() => this.recentDelta.set(0), 1500);
+  }
+
+  // Long press logic
+  public startHold(delta: number) {
+    this.isHolding = false;
+    this.holdTimer = setTimeout(async () => {
+      this.isHolding = true;
+      const bigDelta = delta * 10;
+      this.gameService.updatePlayerLife(this.player.id, bigDelta);
+      this.trackDelta(bigDelta);
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    }, 800);
+  }
+
+  public endHold() {
+    if (this.holdTimer) clearTimeout(this.holdTimer);
+  }
+
+  public handleTap(delta: number, event: Event) {
+    // If it was a long press, we don't trigger the single tap
+    if (this.isHolding) {
+      this.isHolding = false;
+      return;
+    }
+    if (delta > 0) this.increment();
+    else this.decrement();
+  }
+
+  // Tax Logic
+  updateTax(delta: number, event: Event) {
+    event.stopPropagation();
+    this.gameService.updateCommanderTax(this.player.id, delta);
   }
 
   enterCommanderDamageMode(event: Event) {

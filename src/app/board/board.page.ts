@@ -1,9 +1,20 @@
 import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonButton, IonIcon, AlertController, IonFooter, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
+import {
+  IonContent,
+  IonButton,
+  IonIcon,
+  AlertController,
+  IonFooter,
+  IonToolbar,
+  IonSpinner,
+  IonModal,
+  IonHeader,
+  IonTitle,
+} from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { home, refresh, diceOutline } from 'ionicons/icons';
+import { home, refresh, listOutline } from 'ionicons/icons';
 import { PlayerAreaComponent } from '../components/player-area/player-area.component';
 import { GameService } from '../services/game.service';
 
@@ -12,7 +23,19 @@ import { GameService } from '../services/game.service';
   templateUrl: 'board.page.html',
   styleUrls: ['board.page.scss'],
   standalone: true,
-  imports: [IonContent, PlayerAreaComponent, CommonModule, IonButton, IonIcon, IonFooter, IonToolbar, IonSpinner],
+  imports: [
+    IonContent,
+    PlayerAreaComponent,
+    CommonModule,
+    IonButton,
+    IonIcon,
+    IonFooter,
+    IonToolbar,
+    IonSpinner,
+    IonModal,
+    IonHeader,
+    IonTitle,
+  ],
 })
 export class BoardPage {
   public gameService = inject(GameService);
@@ -22,12 +45,14 @@ export class BoardPage {
   public players = this.gameService.players;
   public settings = this.gameService.settings;
 
+  public isHistoryOpen = false;
+
   constructor() {
-    addIcons({ home, refresh, diceOutline });
+    addIcons({ home, refresh, listOutline });
   }
 
-  openDiceApp() {
-    window.open('https://tap-roulette-app.web.app/', '_blank');
+  openHistory() {
+    this.isHistoryOpen = true;
   }
 
   get layoutClass(): string {
@@ -38,16 +63,17 @@ export class BoardPage {
   async goBack() {
     const alert = await this.alertCtrl.create({
       header: 'Torna al Setup',
-      message: 'Sei sicuro di voler tornare indietro? I punti attuali verranno persi.',
+      message:
+        'Sei sicuro di voler tornare indietro? I punti attuali verranno persi.',
       cssClass: 'minimal-dark-alert',
       buttons: [
         { text: 'Annulla', role: 'cancel' },
-        { 
-          text: 'Conferma', 
-          role: 'destructive', 
-          handler: () => this.router.navigate(['/']) 
-        }
-      ]
+        {
+          text: 'Conferma',
+          role: 'destructive',
+          handler: () => this.router.navigate(['/']),
+        },
+      ],
     });
     await alert.present();
   }
@@ -59,12 +85,12 @@ export class BoardPage {
       cssClass: 'minimal-dark-alert',
       buttons: [
         { text: 'Annulla', role: 'cancel' },
-        { 
-          text: 'Ricomincia', 
-          role: 'destructive', 
-          handler: () => this.gameService.resetGame() 
-        }
-      ]
+        {
+          text: 'Ricomincia',
+          role: 'destructive',
+          handler: () => this.gameService.resetGame(),
+        },
+      ],
     });
     await alert.present();
   }

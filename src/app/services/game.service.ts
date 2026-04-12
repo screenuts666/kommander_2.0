@@ -15,6 +15,7 @@ export class GameService {
 
   public players = signal<Player[]>([]);
   public commanderDamageTarget = signal<number | null>(null);
+  public gameLogs = signal<any[]>([]);
   
   // STATI LIVELLO 2
   public monarchPlayerId = signal<number | null>(null);
@@ -43,7 +44,8 @@ export class GameService {
           players: p, 
           commanderDamageTarget: c,
           monarchPlayerId: mon,
-          initiativePlayerId: ini 
+          initiativePlayerId: ini,
+          gameLogs: this.gameLogs()
         };
         Preferences.set({ key: 'mtgTrackerState', value: JSON.stringify(payload) });
       }
@@ -61,6 +63,7 @@ export class GameService {
         this.commanderDamageTarget.set(parsed.commanderDamageTarget);
         this.monarchPlayerId.set(parsed.monarchPlayerId !== undefined ? parsed.monarchPlayerId : null);
         this.initiativePlayerId.set(parsed.initiativePlayerId !== undefined ? parsed.initiativePlayerId : null);
+        this.gameLogs.set(parsed.gameLogs || []);
       } catch(e) {
         // Fallback in caso di corruzione del JSON salvato
         this.initPlayers(this.settings());
@@ -84,6 +87,7 @@ export class GameService {
     this.poisonTargetMode.set(null);
     this.monarchPlayerId.set(null);
     this.initiativePlayerId.set(null);
+    this.gameLogs.set([]);
     // Preserviamo nomi e colori durante il reset
     const oldPlayers = this.players();
     this.initPlayers(this.settings(), oldPlayers);
@@ -108,15 +112,45 @@ export class GameService {
     this.initiativePlayerId.set(playerId);
   }
 
+  public logAction(message: string) {
+    const logs = [...this.gameLogs()];
+    // Manteniamo solo le ultime 30 azioni per leggerezza
+    if (logs.length > 30) logs.pop();
+    logs.unshift({ timestamp: Date.now(), message });
+    this.gameLogs.set(logs);
+  }
+
   public updatePlayerLife(playerId: number, delta: number) {
     this.players.update(players => 
-      players.map(p => p.id === playerId ? { ...p, life: p.life + delta } : p)
+      players.map(p => {
+        if (p.id === playerId) {
+          const newLife = p.life + delta;
+          const playerName = p.name || `Giocatore ${p.id}`;
+          this.logAction(`${playerName}: ${delta > 0 ? '+' : ''}${delta} Vita (${newLife})`);
+          return { ...p, life: newLife };
+        }
+        return p;
+      })
+    );
+  }
+
+  public updateCommanderTax(playerId: number, delta: number) {
+    this.players.update(players => 
+      players.map(p => p.id === playerId ? { ...p, commanderTax: Math.max(0, p.commanderTax + delta) } : p)
     );
   }
 
   public updatePoison(playerId: number, delta: number) {
     this.players.update(players => 
-      players.map(p => p.id === playerId ? { ...p, poison: Math.max(0, p.poison + delta) } : p)
+      players.map(p => {
+        if (p.id === playerId) {
+          const newPoison = Math.max(0, p.poison + delta);
+          const playerName = p.name || `Giocatore ${p.id}`;
+          this.logAction(`${playerName}: ${delta > 0 ? '+' : ''}${delta} Veleno (${newPoison})`);
+          return { ...p, poison: newPoison };
+        }
+        return p;
+      })
     );
   }
 
@@ -212,7 +246,8 @@ export class GameService {
         commanderDamage: {},
         partnerDamage: {},
         hasPartner: hasPartner,
-        poison: 0
+        poison: 0,
+        commanderTax: 0
       });
     }
 

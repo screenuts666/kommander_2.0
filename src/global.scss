@@ -76,3 +76,37 @@
     font-weight: 700 !important;
   }
 }
+
+/* -------------------------------------
+ * SHARED MINIMAL FOOTER SYSTEM
+ * ------------------------------------- */
+.minimal-footer {
+  --background: #060606 !important;
+  --min-height: 55px;
+  border-top: 1px solid #1a1a1a;
+}
+
+.footer-buttons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 16px;
+  height: 55px;
+  max-width: 450px;
+  margin: 0 auto;
+  
+  ion-button {
+    margin: 0;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    --color: #aaa; /* Brighter Silver/Medium */
+    
+    &.activated, &:active {
+      --color: #ffffff;
+    }
+    
+    ion-icon {
+      font-size: 26px;
+    }
+  }
+}

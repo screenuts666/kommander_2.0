@@ -22,15 +22,37 @@
 <ion-footer class="ion-no-border">
   <ion-toolbar class="minimal-footer">
     <div class="footer-buttons">
-      <ion-button fill="clear" color="medium" (click)="goBack()">
+      <ion-button fill="clear" (click)="goBack()">
         <ion-icon name="home" slot="icon-only"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" color="medium" (click)="openDiceApp()">
-        <ion-icon name="dice-outline" slot="icon-only"></ion-icon>
+      <ion-button fill="clear" (click)="openHistory()">
+        <ion-icon name="list-outline" slot="icon-only"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" color="medium" (click)="reset()">
+      <ion-button fill="clear" (click)="reset()">
         <ion-icon name="refresh" slot="icon-only"></ion-icon>
       </ion-button>
     </div>
   </ion-toolbar>
 </ion-footer>
+
+<ion-modal [isOpen]="isHistoryOpen" (willDismiss)="isHistoryOpen = false" [initialBreakpoint]="0.5" [breakpoints]="[0, 0.5, 0.75]" class="history-modal">
+  <ng-template>
+    <ion-header class="ion-no-border">
+      <ion-toolbar>
+        <ion-title>Storico Partita</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="history-content">
+      <div class="log-container">
+        @for (log of gameService.gameLogs(); track log.timestamp) {
+          <div class="log-entry">
+            <span class="log-time">{{ log.timestamp | date:'HH:mm:ss' }}</span>
+            <span class="log-msg">{{ log.message }}</span>
+          </div>
+        } @empty {
+          <p class="empty-log">Nessuna azione registrata in questa partita.</p>
+        }
+      </div>
+    </ion-content>
+  </ng-template>
+</ion-modal>

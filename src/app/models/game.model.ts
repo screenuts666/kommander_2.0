@@ -24,6 +24,12 @@ export interface Player {
   partnerDamage: Record<number, number>;   // maps opponentId -> damage dealt by their partner
   hasPartner?: boolean;
   poison: number;
+  commanderTax: number;
+}
+
+export interface LogEntry {
+  timestamp: number;
+  message: string;
 }
 
 export interface GameSettings {
