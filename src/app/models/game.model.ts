@@ -32,10 +32,10 @@ export interface GameSettings {
 }
 
 export const MTG_COLORS = [
-  'linear-gradient(135deg, #7C7360 0%, #302C23 100%)', // White (Dark Golden Pearl)
-  'linear-gradient(135deg, #214F75 0%, #0C1E2E 100%)', // Blue (Deep Sea)
-  'linear-gradient(135deg, #2A2130 0%, #0D0A0F 100%)', // Black (Dark Violet/Charcoal)
-  'linear-gradient(135deg, #7A2424 0%, #2B0A0A 100%)', // Red (Dark Blood)
-  'linear-gradient(135deg, #285934 0%, #0F2414 100%)', // Green (Deep Jungle)
-  'linear-gradient(135deg, #694C2B 0%, #26190B 100%)', // Colorless (Dark Amber)
+  'linear-gradient(135deg, #64748B 0%, #1E293B 100%)', // White (Slate Pearl - Dark enough for white text)
+  'linear-gradient(135deg, #0284C7 0%, #082F49 100%)', // Blue (Deep Ocean)
+  'linear-gradient(135deg, #3F3F46 0%, #09090B 100%)', // Black (Abyssal Void)
+  'linear-gradient(135deg, #DC2626 0%, #450A0A 100%)', // Red (Crimson Blood)
+  'linear-gradient(135deg, #059669 0%, #022C22 100%)', // Green (Emerald Forest)
+  'linear-gradient(135deg, #B45309 0%, #451A03 100%)', // Colorless (Artifact Bronze)
 ];

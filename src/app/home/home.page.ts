@@ -41,7 +41,7 @@ export class HomePage {
         { 
           text: 'Conferma', 
           role: 'destructive', 
-          handler: () => this.router.navigate(['/setup']) 
+          handler: () => this.router.navigate(['/']) 
         }
       ]
     });

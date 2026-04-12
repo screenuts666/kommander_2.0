@@ -98,6 +98,6 @@ export class SetupPage {
       layout: this.layout,
     };
     this.gameService.updateSettings(settings);
-    this.router.navigate(['/home']); // Navigate to game tracker
+    this.router.navigate(['/board']); // Navigate to game tracker
   }
 }
