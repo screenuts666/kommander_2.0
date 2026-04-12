@@ -3,13 +3,77 @@
   [ngClass]="[player.isFlipped ? 'flipped' : '', extraClass]"
   [ngStyle]="{ 'background-color': player.color }"
 >
-  <div class="touch-zone plus" (click)="increment()"></div>
+  <!-- 1. MODALITÀ NORMALE -->
+  <ng-container *ngIf="!isDamageMode()">
+    
+    <!-- Tasto per entrare in Modalità Danno e farsi segnare i danni -->
+    <div class="commander-btn-wrapper" (click)="enterCommanderDamageMode($event)">
+      <ion-icon name="shield-half-outline"></ion-icon>
+    </div>
 
-  <div class="life-display">
-    <span class="life-total">{{ player.life }}</span>
-  </div>
+    <div class="touch-zone plus" (click)="increment()"></div>
+    <div class="life-display">
+      <span class="life-total">{{ player.life }}</span>
+    </div>
+    <div class="touch-zone minus" (click)="decrement()"></div>
 
-  <div class="touch-zone minus" (click)="decrement()"></div>
-  
-  <!-- For future use: Player name / Commander Damage display area -->
+  </ng-container>
+
+  <!-- 2. MODALITÀ DANNO: IL BERSAGLIO (Il player che sta subendo i danni in questa schermata) -->
+  <ng-container *ngIf="isTarget()">
+    <div class="target-mode-wrapper">
+      <div class="target-header">
+        <span class="target-name">GIOCATORE {{ player.id }}</span>
+        <span class="target-subtitle">BERSAGLIO DEL DANNO DEL COMANDANTE</span>
+      </div>
+      
+      <div class="target-bottom-bar">
+        <div class="life-reminder">
+          <ion-icon name="heart"></ion-icon>
+          <span>{{ player.life }}</span>
+        </div>
+        <div class="exit-btn" (click)="exitCommanderDamageMode($event)">
+          <ion-icon name="chevron-down-outline"></ion-icon>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- 3. MODALITÀ DANNO: GLI ATTACCANTI (Quelli che infliggono danno al bersaglio) -->
+  <ng-container *ngIf="isSource()">
+    <div class="source-mode-wrapper">
+      <div class="partner-switch-container">
+        <span>PARTNER</span>
+        <ion-toggle color="light" [checked]="isPartnerMode()" (ionChange)="togglePartner($event)"></ion-toggle>
+      </div>
+
+      <!-- Singolo Comandante -->
+      <div class="damage-pill" *ngIf="!isPartnerMode()">
+        <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, false, $event)">-</button>
+        <span class="pill-val">{{ mainCommanderDamage() }}</span>
+        <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, false, $event)">+</button>
+      </div>
+
+      <!-- Sdoppiamento Partner -->
+      <div class="damage-pill-split" *ngIf="isPartnerMode()">
+        <!-- C1 -->
+        <div class="split-half">
+          <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, false, $event)">-</button>
+          <span class="pill-val">{{ mainCommanderDamage() }}</span>
+          <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, false, $event)">+</button>
+        </div>
+        <!-- C2 Partner -->
+        <div class="split-half">
+          <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, true, $event)">-</button>
+          <span class="pill-val">{{ partnerCommanderDamage() }}</span>
+          <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, true, $event)">+</button>
+        </div>
+      </div>
+
+      <div class="source-footer">
+        GIOCATORE {{ player.id }}
+      </div>
+    </div>
+  </ng-container>
+
 </div>

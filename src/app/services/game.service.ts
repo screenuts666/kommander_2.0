@@ -13,6 +13,7 @@ export class GameService {
   });
 
   public players = signal<Player[]>([]);
+  public commanderDamageTarget = signal<number | null>(null);
 
   constructor() {
     this.initPlayers(this.settings());
@@ -24,13 +25,39 @@ export class GameService {
   }
 
   public resetGame() {
+    this.commanderDamageTarget.set(null);
     this.initPlayers(this.settings());
+  }
+
+  public setCommanderDamageTarget(playerId: number | null) {
+    this.commanderDamageTarget.set(playerId);
   }
 
   public updatePlayerLife(playerId: number, delta: number) {
     this.players.update(players => 
       players.map(p => p.id === playerId ? { ...p, life: p.life + delta } : p)
     );
+  }
+
+  public updateCommanderDamage(targetId: number, sourceId: number, isPartner: boolean, delta: number) {
+    this.players.update(players => {
+      return players.map(p => {
+        if (p.id === targetId) {
+          const dict = isPartner ? p.partnerDamage : p.commanderDamage;
+          const currentDmg = dict[sourceId] || 0;
+          const newDmg = Math.max(0, currentDmg + delta); // non può scendere sotto zero
+          const actualDelta = newDmg - currentDmg; // quanti danni EFFETTIVAMENTE aggiunti o rimossi
+          
+          return {
+            ...p,
+            life: p.life - actualDelta, // sottrae dalla vita i danni aggiunti (o somma se rimossi)
+            commanderDamage: isPartner ? p.commanderDamage : { ...p.commanderDamage, [sourceId]: newDmg },
+            partnerDamage: isPartner ? { ...p.partnerDamage, [sourceId]: newDmg } : p.partnerDamage
+          };
+        }
+        return p;
+      });
+    });
   }
 
   private initPlayers(settings: GameSettings) {
@@ -109,7 +136,9 @@ export class GameService {
         life: settings.startingLife,
         color: color,
         isFlipped: isFlipped,
-        cssClass: cssClass
+        cssClass: cssClass,
+        commanderDamage: {},
+        partnerDamage: {}
       });
     }
 

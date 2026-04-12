@@ -20,7 +20,8 @@ export interface Player {
   isFlipped: boolean;
   cssClass?: string;
   name?: string;
-  commanderDamage?: { [opponentId: number]: number }; // For future use
+  commanderDamage: Record<number, number>; // maps opponentId -> damage dealt by their main commander
+  partnerDamage: Record<number, number>;   // maps opponentId -> damage dealt by their partner
 }
 
 export interface GameSettings {
