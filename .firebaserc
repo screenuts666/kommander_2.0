@@ -1,5 +1,15 @@
 {
   "projects": {
     "default": "kommander2punto0"
-  }
+  },
+  "targets": {
+    "kommander2punto0": {
+      "hosting": {
+        "app": [
+          "kommander2punto0"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
