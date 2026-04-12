@@ -36,9 +36,11 @@
         <ion-item class="minimal-item">
           <ion-icon name="grid-outline" slot="start" class="subtle-icon"></ion-icon>
           <ion-select label="Board Layout" labelPlacement="stacked" [(ngModel)]="layout" interface="popover" class="sleek-select">
-            <ion-select-option *ngFor="let opt of layoutOptions" [value]="opt.value">
-              {{ opt.label }}
-            </ion-select-option>
+            @for (opt of layoutOptions; track opt.value) {
+              <ion-select-option [value]="opt.value">
+                {{ opt.label }}
+              </ion-select-option>
+            }
           </ion-select>
         </ion-item>
 

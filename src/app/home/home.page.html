@@ -1,13 +1,14 @@
 <ion-content [fullscreen]="true" [scrollY]="false">
   <div class="game-board" [ngClass]="layoutClass">
     
-    <app-player-area 
-      *ngFor="let p of players(); let i = index" 
-      [player]="p"
-      [extraClass]="p.cssClass || ''"
-      class="player-slot"
-      [ngClass]="'player-' + (p.id)">
-    </app-player-area>
+    @for (p of players(); track p.id; let i = $index) {
+      <app-player-area 
+        [player]="p"
+        [extraClass]="p.cssClass || ''"
+        class="player-slot"
+        [ngClass]="'player-' + (p.id)">
+      </app-player-area>
+    }
 
   </div>
 </ion-content>

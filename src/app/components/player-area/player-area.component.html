@@ -4,8 +4,7 @@
   [ngStyle]="{ 'background': player.color }"
 >
   <!-- 1. MODALITÀ NORMALE -->
-  <ng-container *ngIf="!isDamageMode()">
-    
+  @if (!isDamageMode()) {
     <!-- Tasto per entrare in Modalità Danno e farsi segnare i danni -->
     <div class="commander-btn-wrapper" (click)="enterCommanderDamageMode($event)">
       <ion-icon name="shield-half-outline"></ion-icon>
@@ -16,11 +15,10 @@
       <span class="life-total">{{ player.life }}</span>
     </div>
     <div class="touch-zone minus" (click)="decrement()"></div>
-
-  </ng-container>
+  }
 
   <!-- 2. MODALITÀ DANNO: IL BERSAGLIO (Il player che sta subendo i danni in questa schermata) -->
-  <ng-container *ngIf="isTarget()">
+  @if (isTarget()) {
     <div class="target-mode-wrapper">
       <div class="target-header">
         <span class="target-name">GIOCATORE {{ player.id }}</span>
@@ -37,10 +35,10 @@
         </div>
       </div>
     </div>
-  </ng-container>
+  }
 
   <!-- 3. MODALITÀ DANNO: GLI ATTACCANTI (Quelli che infliggono danno al bersaglio) -->
-  <ng-container *ngIf="isSource()">
+  @if (isSource()) {
     <div class="source-mode-wrapper">
       <div class="partner-switch-container">
         <span>PARTNER</span>
@@ -48,32 +46,36 @@
       </div>
 
       <!-- Singolo Comandante -->
-      <div class="damage-pill" *ngIf="!isPartnerMode()">
-        <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, false, $event)">-</button>
-        <span class="pill-val">{{ mainCommanderDamage() }}</span>
-        <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, false, $event)">+</button>
-      </div>
-
-      <!-- Sdoppiamento Partner -->
-      <div class="damage-pill-split" *ngIf="isPartnerMode()">
-        <!-- C1 -->
-        <div class="split-half">
+      @if (!isPartnerMode()) {
+        <div class="damage-pill">
           <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, false, $event)">-</button>
           <span class="pill-val">{{ mainCommanderDamage() }}</span>
           <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, false, $event)">+</button>
         </div>
-        <!-- C2 Partner -->
-        <div class="split-half">
-          <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, true, $event)">-</button>
-          <span class="pill-val">{{ partnerCommanderDamage() }}</span>
-          <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, true, $event)">+</button>
+      }
+
+      <!-- Sdoppiamento Partner -->
+      @if (isPartnerMode()) {
+        <div class="damage-pill-split">
+          <!-- C1 -->
+          <div class="split-half">
+            <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, false, $event)">-</button>
+            <span class="pill-val">{{ mainCommanderDamage() }}</span>
+            <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, false, $event)">+</button>
+          </div>
+          <!-- C2 Partner -->
+          <div class="split-half">
+            <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, true, $event)">-</button>
+            <span class="pill-val">{{ partnerCommanderDamage() }}</span>
+            <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, true, $event)">+</button>
+          </div>
         </div>
-      </div>
+      }
 
       <div class="source-footer">
         GIOCATORE {{ player.id }}
       </div>
     </div>
-  </ng-container>
+  }
 
 </div>
