@@ -1,15 +1,58 @@
 <div
   class="player-container"
   [ngClass]="[player.isFlipped ? 'flipped' : '', extraClass]"
-  [ngStyle]="{ 'background': player.color }"
+  [ngStyle]="{ background: player.color }"
 >
+  <div class="player-header">
+    @if (isMonarch()) {
+      <ion-icon class="status-icon monarch-icon" name="star-outline"></ion-icon>
+    }
+    @if (hasInitiative()) {
+      <ion-icon
+        class="status-icon initiative-icon"
+        name="flash-outline"
+      ></ion-icon>
+    }
+    <span class="player-name">{{
+      player.name || "GIOCATORE " + player.id
+    }}</span>
+    <ion-icon
+      class="settings-trigger"
+      name="settings-outline"
+      (click)="openSettings($event)"
+    ></ion-icon>
+  </div>
+
   <!-- 1. MODALITÀ NORMALE -->
-  @if (!isDamageMode()) {
-    <!-- Tasto per entrare in Modalità Danno e farsi segnare i danni -->
-    <div class="commander-btn-wrapper" (click)="enterCommanderDamageMode($event)">
-      <ion-icon name="shield-half-outline"></ion-icon>
+  @if (!isDamageMode() && !isPoisonModeActive()) {
+    <div class="action-buttons-container">
+      @if (player.poison > 0) {
+        <div class="poison-btn-wrapper" (click)="enterPoisonMode($event)">
+          <ion-icon name="skull-outline"></ion-icon>
+          <span class="poison-badge">{{ player.poison }}</span>
+        </div>
+      }
+
+      @if (isMonarchInPlay() && !isMonarch()) {
+        <div class="status-btn-wrapper monarch" (click)="claimMonarchMain($event)">
+          <ion-icon name="star-outline"></ion-icon>
+        </div>
+      }
+
+      @if (isInitiativeInPlay() && !hasInitiative()) {
+        <div class="status-btn-wrapper initiative" (click)="claimInitiativeMain($event)">
+          <ion-icon name="flash-outline"></ion-icon>
+        </div>
+      }
+      <div
+        class="commander-btn-wrapper"
+        (click)="enterCommanderDamageMode($event)"
+      >
+        <ion-icon name="shield-half-outline"></ion-icon>
+      </div>
     </div>
 
+    <!-- Tzone -->
     <div class="touch-zone plus" (click)="increment()"></div>
     <div class="life-display">
       <span class="life-total">{{ player.life }}</span>
@@ -17,14 +60,15 @@
     <div class="touch-zone minus" (click)="decrement()"></div>
   }
 
-  <!-- 2. MODALITÀ DANNO: IL BERSAGLIO (Il player che sta subendo i danni in questa schermata) -->
+  <!-- 2. MODALITÀ DANNO COMANDANTE -->
   @if (isTarget()) {
     <div class="target-mode-wrapper">
       <div class="target-header">
-        <span class="target-name">GIOCATORE {{ player.id }}</span>
+        <span class="target-name">{{
+          player.name || "GIOCATORE " + player.id
+        }}</span>
         <span class="target-subtitle">BERSAGLIO DEL DANNO DEL COMANDANTE</span>
       </div>
-      
       <div class="target-bottom-bar">
         <div class="life-reminder">
           <ion-icon name="heart"></ion-icon>
@@ -37,45 +81,196 @@
     </div>
   }
 
-  <!-- 3. MODALITÀ DANNO: GLI ATTACCANTI (Quelli che infliggono danno al bersaglio) -->
   @if (isSource()) {
     <div class="source-mode-wrapper">
       <div class="partner-switch-container">
         <span>PARTNER</span>
-        <ion-toggle color="light" [checked]="isPartnerMode()" (ionChange)="togglePartner($event)"></ion-toggle>
+        <ion-toggle
+          color="light"
+          [checked]="isPartnerMode()"
+          (ionChange)="togglePartner($event)"
+        ></ion-toggle>
       </div>
-
-      <!-- Singolo Comandante -->
       @if (!isPartnerMode()) {
         <div class="damage-pill">
-          <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, false, $event)">-</button>
+          <button
+            class="pill-btn minus-btn"
+            (click)="changeCommanderDamageDirect(-1, false, $event)"
+          >
+            -
+          </button>
           <span class="pill-val">{{ mainCommanderDamage() }}</span>
-          <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, false, $event)">+</button>
+          <button
+            class="pill-btn plus-btn"
+            (click)="changeCommanderDamageDirect(1, false, $event)"
+          >
+            +
+          </button>
         </div>
       }
-
-      <!-- Sdoppiamento Partner -->
       @if (isPartnerMode()) {
         <div class="damage-pill-split">
-          <!-- C1 -->
           <div class="split-half">
-            <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, false, $event)">-</button>
+            <button
+              class="pill-btn minus-btn"
+              (click)="changeCommanderDamageDirect(-1, false, $event)"
+            >
+              -
+            </button>
             <span class="pill-val">{{ mainCommanderDamage() }}</span>
-            <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, false, $event)">+</button>
+            <button
+              class="pill-btn plus-btn"
+              (click)="changeCommanderDamageDirect(1, false, $event)"
+            >
+              +
+            </button>
           </div>
-          <!-- C2 Partner -->
           <div class="split-half">
-            <button class="pill-btn minus-btn" (click)="changeCommanderDamageDirect(-1, true, $event)">-</button>
+            <button
+              class="pill-btn minus-btn"
+              (click)="changeCommanderDamageDirect(-1, true, $event)"
+            >
+              -
+            </button>
             <span class="pill-val">{{ partnerCommanderDamage() }}</span>
-            <button class="pill-btn plus-btn" (click)="changeCommanderDamageDirect(1, true, $event)">+</button>
+            <button
+              class="pill-btn plus-btn"
+              (click)="changeCommanderDamageDirect(1, true, $event)"
+            >
+              +
+            </button>
           </div>
         </div>
       }
-
       <div class="source-footer">
-        GIOCATORE {{ player.id }}
+        {{ player.name || "GIOCATORE " + player.id }}
       </div>
     </div>
   }
 
+  <!-- 3. MODALITÀ VELENO -->
+  @if (isPoisonTarget()) {
+    <div class="target-mode-wrapper poison-theme">
+      <div class="target-header">
+        <span class="target-name">DANNO DA VELENO</span>
+      </div>
+      <div class="damage-pill" style="align-self: center; margin-top: 15px">
+        <button
+          class="pill-btn minus-btn"
+          (click)="changePoisonDirect(-1, $event)"
+        >
+          -
+        </button>
+        <span class="pill-val poison-val">{{ player.poison }}</span>
+        <button
+          class="pill-btn plus-btn"
+          (click)="changePoisonDirect(1, $event)"
+        >
+          +
+        </button>
+      </div>
+      <div class="target-bottom-bar">
+        <div class="life-reminder" style="visibility: hidden">
+          <ion-icon name="heart"></ion-icon>
+          <span>0</span>
+        </div>
+        <div class="exit-btn poison-exit" (click)="exitPoisonMode($event)">
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (isPoisonSource()) {
+    <div class="source-mode-wrapper idle-overlay"></div>
+  }
+
+  <!-- 4. MODALE IMPOSTAZIONI -->
+  <ion-modal
+    [isOpen]="isSettingsOpen()"
+    (willDismiss)="closeSettings()"
+    class="player-settings-modal"
+  >
+    <ng-template>
+      <ion-header class="ion-no-border">
+        <ion-toolbar>
+          <ion-title>Impostazioni</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeSettings()"
+              ><ion-icon name="close-outline"></ion-icon
+            ></ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="settings-content">
+        <div class="settings-body">
+          <ion-item class="dark-input-item" lines="none">
+            <ion-label position="stacked">Nome Giocatore</ion-label>
+            <ion-input
+              type="text"
+              [value]="tempName()"
+              (ionInput)="onNameChange($event)"
+            ></ion-input>
+          </ion-item>
+
+          <div class="color-picker">
+            <span class="picker-title">Colore Cromatico</span>
+            <div class="swatches">
+              @for (c of MTG_COLORS; track c) {
+                <div
+                  class="swatch"
+                  [style.background]="c"
+                  [class.selected]="c === tempColor()"
+                  (click)="selectColor(c)"
+                ></div>
+              }
+            </div>
+          </div>
+
+          <div class="status-claims">
+            <ion-button
+              expand="block"
+              color="success"
+              fill="outline"
+              class="status-btn"
+              (click)="assignPoisonFromSettings($event)"
+            >
+              <ion-icon slot="start" name="skull-outline"></ion-icon>
+              Modalità Veleno
+            </ion-button>
+
+            @if (!isMonarchInPlay()) {
+              <ion-button
+                expand="block"
+                color="warning"
+                fill="outline"
+                class="status-btn"
+                (click)="claimMonarch()"
+              >
+                <ion-icon slot="start" name="star-outline"></ion-icon>
+                Rivendica Monarca
+              </ion-button>
+            }
+            @if (!isInitiativeInPlay()) {
+              <ion-button
+                expand="block"
+                color="tertiary"
+                fill="outline"
+                class="status-btn"
+                (click)="claimInitiative()"
+              >
+                <ion-icon slot="start" name="flash-outline"></ion-icon>
+                Prendi Iniziativa
+              </ion-button>
+            }
+          </div>
+
+          <ion-button expand="block" class="save-btn" (click)="saveSettings()"
+            >SALVA</ion-button
+          >
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </div>

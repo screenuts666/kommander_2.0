@@ -16,6 +16,11 @@ export class GameService {
   public players = signal<Player[]>([]);
   public commanderDamageTarget = signal<number | null>(null);
   
+  // STATI LIVELLO 2
+  public monarchPlayerId = signal<number | null>(null);
+  public initiativePlayerId = signal<number | null>(null);
+  public poisonTargetMode = signal<number | null>(null);
+  
   // Flag per comunicare alla view quando i dati Async sono pronti per essere dipinti
   public isReady = signal<boolean>(false);
 
@@ -28,10 +33,18 @@ export class GameService {
       const s = this.settings();
       const p = this.players();
       const c = this.commanderDamageTarget();
+      const mon = this.monarchPlayerId();
+      const ini = this.initiativePlayerId();
 
       // Salva solo dopo che il caricamento differito è terminato
       if (ready) {
-        const payload = { settings: s, players: p, commanderDamageTarget: c };
+        const payload = { 
+          settings: s, 
+          players: p, 
+          commanderDamageTarget: c,
+          monarchPlayerId: mon,
+          initiativePlayerId: ini 
+        };
         Preferences.set({ key: 'mtgTrackerState', value: JSON.stringify(payload) });
       }
     });
@@ -46,6 +59,8 @@ export class GameService {
         this.settings.set(parsed.settings);
         this.players.set(parsed.players);
         this.commanderDamageTarget.set(parsed.commanderDamageTarget);
+        this.monarchPlayerId.set(parsed.monarchPlayerId !== undefined ? parsed.monarchPlayerId : null);
+        this.initiativePlayerId.set(parsed.initiativePlayerId !== undefined ? parsed.initiativePlayerId : null);
       } catch(e) {
         // Fallback in caso di corruzione del JSON salvato
         this.initPlayers(this.settings());
@@ -60,21 +75,48 @@ export class GameService {
   public updateSettings(newSettings: GameSettings) {
     this.settings.set(newSettings);
     this.commanderDamageTarget.set(null); // Fix: pulisce sempre la modalità danni
+    this.poisonTargetMode.set(null);
     this.initPlayers(newSettings);
   }
 
   public resetGame() {
     this.commanderDamageTarget.set(null);
-    this.initPlayers(this.settings());
+    this.poisonTargetMode.set(null);
+    this.monarchPlayerId.set(null);
+    this.initiativePlayerId.set(null);
+    // Preserviamo nomi e colori durante il reset
+    const oldPlayers = this.players();
+    this.initPlayers(this.settings(), oldPlayers);
   }
 
   public setCommanderDamageTarget(playerId: number | null) {
+    if (playerId !== null) this.poisonTargetMode.set(null); // Mutua esclusione
     this.commanderDamageTarget.set(playerId);
+  }
+
+  public setPoisonTargetMode(playerId: number | null) {
+    if (playerId !== null) this.commanderDamageTarget.set(null); // Mutua esclusione
+    this.poisonTargetMode.set(playerId);
+  }
+
+  public setMonarch(playerId: number | null) {
+    // Esclusività gestita da signal set
+    this.monarchPlayerId.set(playerId);
+  }
+
+  public setInitiative(playerId: number | null) {
+    this.initiativePlayerId.set(playerId);
   }
 
   public updatePlayerLife(playerId: number, delta: number) {
     this.players.update(players => 
       players.map(p => p.id === playerId ? { ...p, life: p.life + delta } : p)
+    );
+  }
+
+  public updatePoison(playerId: number, delta: number) {
+    this.players.update(players => 
+      players.map(p => p.id === playerId ? { ...p, poison: Math.max(0, p.poison + delta) } : p)
     );
   }
 
@@ -99,7 +141,13 @@ export class GameService {
     });
   }
 
-  private initPlayers(settings: GameSettings) {
+  public updatePlayerIdentity(playerId: number, name: string, color: string) {
+    this.players.update(players => 
+      players.map(p => p.id === playerId ? { ...p, name, color } : p)
+    );
+  }
+
+  private initPlayers(settings: GameSettings, oldPlayers?: Player[]) {
     const newPlayers: Player[] = [];
     
     for (let i = 0; i < settings.numPlayers; i++) {
@@ -111,56 +159,36 @@ export class GameService {
           isFlipped = i === 0;
           break;
         case '2v2-opposite':
-          // P1(0), P3(2) a sinistra -> facciata verso sinistra (rotate-90)
-          // P2(1), P4(3) a destra -> facciata verso destra (rotate-270)
           if (i === 0 || i === 2) { cssClass = 'rotate-90'; }
           else { cssClass = 'rotate-270'; }
           break;
         case '3v3-opposite':
-          // 3 per lato, schermo orizzontale
-          // P1, P3, P5 a sinistra (rotate-90)
-          // P2, P4, P6 a destra (rotate-270)
           if (i === 0 || i === 2 || i === 4) { cssClass = 'rotate-90'; }
           else { cssClass = 'rotate-270'; }
           break;
         case '1v1-side-by-side':
-          // Entrambi rivolti verso sx (rotate-90)
           if (i === 0 || i === 1) { cssClass = 'rotate-90'; }
           break;
         case 'single':
           isFlipped = false;
           break;
         case '5-around':
-          // P1(0) in alto al contrario (flipped: true)
-          // P2(1), P4(3) a sx verso sx (rotate-90)
-          // P3(2), P5(4) a dx verso dx (rotate-270)
           if (i === 0) { isFlipped = true; }
           else if (i === 1 || i === 3) { cssClass = 'rotate-90'; }
           else if (i === 2 || i === 4) { cssClass = 'rotate-270'; }
           break;
         case '3-around':
-          // P1(0) grande in alto -> capovolto
-          // P2(1) piccolo a sx -> verso sx (rotate-90)
-          // P3(2) piccolo a dx -> verso dx (rotate-270)
           if (i === 0) { isFlipped = true; }
           else if (i === 1) { cssClass = 'rotate-90'; }
           else if (i === 2) { cssClass = 'rotate-270'; }
           break;
         case '4-around':
-          // P1(0) in alto al contrario (flipped: true)
-          // P2(1) a sx verso sx (rotate-90)
-          // P3(2) rimane uguale (flipped: false) in basso
-          // P4(3) a dx verso dx (rotate-270)
           if (i === 0) { isFlipped = true; }
           else if (i === 1) { cssClass = 'rotate-90'; }
           else if (i === 2) { isFlipped = false; }
           else if (i === 3) { cssClass = 'rotate-270'; }
           break;
         case '6-around':
-          // P1(0) = Top (Flipped)
-          // P2(1), P4(3) = Left (Rotated 90)
-          // P3(2), P5(4) = Right (Rotated 270)
-          // P6(5) = Bottom (Normal)
           if (i === 0) { isFlipped = true; } 
           else if (i === 1 || i === 3) { cssClass = 'rotate-90'; } 
           else if (i === 2 || i === 4) { cssClass = 'rotate-270'; } 
@@ -168,17 +196,23 @@ export class GameService {
           break;
       }
 
-      const color = MTG_COLORS[i % MTG_COLORS.length];
+      // Se facciamo un reset, vogliamo ereditare nome e colore se l'ID esiste
+      const existingIdentity = oldPlayers?.find(op => op.id === i + 1);
+      const color = existingIdentity ? existingIdentity.color : MTG_COLORS[i % MTG_COLORS.length];
+      const name = existingIdentity ? existingIdentity.name : undefined;
+      const hasPartner = existingIdentity ? existingIdentity.hasPartner : false;
 
       newPlayers.push({
         id: i + 1,
         life: settings.startingLife,
+        name: name,
         color: color,
         isFlipped: isFlipped,
         cssClass: cssClass,
         commanderDamage: {},
         partnerDamage: {},
-        hasPartner: false
+        hasPartner: hasPartner,
+        poison: 0
       });
     }
 

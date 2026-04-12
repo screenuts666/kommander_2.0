@@ -23,6 +23,7 @@ export interface Player {
   commanderDamage: Record<number, number>; // maps opponentId -> damage dealt by their main commander
   partnerDamage: Record<number, number>;   // maps opponentId -> damage dealt by their partner
   hasPartner?: boolean;
+  poison: number;
 }
 
 export interface GameSettings {

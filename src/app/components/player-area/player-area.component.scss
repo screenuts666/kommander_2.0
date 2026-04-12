@@ -88,14 +88,57 @@
 }
 
 /* -------------------------------------
- * COMMANDER DAMAGE UI STYLES
+ * UI ELEMENTI GENERICI & HEADER
  * ------------------------------------- */
 
-.commander-btn-wrapper {
+.player-header {
+  position: absolute;
+  top: 16px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  z-index: 15;
+  pointer-events: none; /* Let clicks pass unless on settings trigger */
+
+  .status-icon {
+    font-size: 20px;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+    &.monarch-icon { color: #facc15; }
+    &.initiative-icon { color: #22d3ee; }
+  }
+
+  .player-name {
+    color: rgba(255, 255, 255, 0.7);
+    font-weight: 700;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+  }
+
+  .settings-trigger {
+    pointer-events: auto;
+    font-size: 22px;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: color 0.2s;
+    &:active { color: white; }
+  }
+}
+
+.action-buttons-container {
   position: absolute;
   bottom: 24px;
   right: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   z-index: 50;
+}
+
+.commander-btn-wrapper, .poison-btn-wrapper, .status-btn-wrapper {
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -110,9 +153,36 @@
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   transition: transform 0.2s;
+  position: relative;
+  pointer-events: auto;
   
   &:active {
     transform: scale(0.9);
+  }
+}
+
+.status-btn-wrapper {
+  &.monarch { color: #facc15; }
+  &.initiative { color: #22d3ee; }
+}
+
+.poison-btn-wrapper {
+  color: #a3e635; /* Toxic green */
+  .poison-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    background: #4d7c0f;
+    color: white;
+    font-weight: 800;
+    font-size: 12px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 50%;
+    border: 2px solid #000;
   }
 }
 
@@ -300,3 +370,104 @@
   text-transform: uppercase;
   letter-spacing: 1px;
 }
+
+/* -------------------------------------
+ * POISON THEME E SETTINGS MODAL
+ * ------------------------------------- */
+
+.poison-theme {
+  background: rgba(15, 30, 15, 0.95);
+  box-shadow: inset 0 0 100px rgba(77, 124, 15, 0.4);
+  .target-name { color: #84cc16; }
+  .poison-val { color: #bef264; }
+  .poison-exit {
+    background: #4d7c0f; border: 1px solid #65a30d;
+    &:active { background: #65a30d; }
+  }
+}
+
+.idle-overlay {
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+}
+
+.player-settings-modal {
+  --background: #121212;
+  --border-radius: 16px;
+  --height: 480px;
+
+  ion-toolbar {
+    --background: #1a1a1a;
+    --color: white;
+  }
+
+  .settings-content {
+    --background: #121212;
+  }
+
+  .settings-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .dark-input-item {
+    --background: #1a1a1a;
+    --border-radius: 12px;
+    --padding-start: 16px;
+    color: white;
+  }
+
+  .color-picker {
+    .picker-title {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      display: block;
+    }
+    .swatches {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .swatch {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: transform 0.2s, border-color 0.2s;
+      &.selected {
+        border-color: #ffffff;
+        transform: scale(1.1);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+
+  .status-claims {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 8px;
+    
+    .status-btn {
+      margin: 0;
+      height: 48px;
+      font-weight: 700;
+    }
+  }
+
+  .save-btn {
+    --background: white;
+    --color: black;
+    margin-top: 16px;
+    margin-bottom: 24px;
+    height: 50px;
+    font-weight: 800;
+    letter-spacing: 2px;
+  }
+}
+

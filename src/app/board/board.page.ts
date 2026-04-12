@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { IonContent, IonButton, IonIcon, AlertController, IonFooter, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { home, refresh } from 'ionicons/icons';
+import { home, refresh, diceOutline } from 'ionicons/icons';
 import { PlayerAreaComponent } from '../components/player-area/player-area.component';
 import { GameService } from '../services/game.service';
 
@@ -23,7 +23,11 @@ export class BoardPage {
   public settings = this.gameService.settings;
 
   constructor() {
-    addIcons({ home, refresh });
+    addIcons({ home, refresh, diceOutline });
+  }
+
+  openDiceApp() {
+    window.open('https://tap-roulette-app.web.app/', '_blank');
   }
 
   get layoutClass(): string {

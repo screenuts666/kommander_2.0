@@ -1,10 +1,33 @@
 import { Component, Input, inject, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Player } from '../../models/game.model';
+import { Player, MTG_COLORS } from '../../models/game.model';
 import { GameService } from '../../services/game.service';
-import { IonIcon, IonToggle } from '@ionic/angular/standalone';
+import {
+  IonIcon,
+  IonToggle,
+  IonModal,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonButton,
+  IonButtons,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonContent,
+} from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { shieldHalfOutline, chevronDownOutline, heart } from 'ionicons/icons';
+import {
+  shieldHalfOutline,
+  chevronDownOutline,
+  heart,
+  settingsOutline,
+  skullOutline,
+  starOutline,
+  flashOutline,
+  closeOutline,
+  checkmarkCircle,
+} from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
@@ -12,7 +35,21 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
   templateUrl: './player-area.component.html',
   styleUrls: ['./player-area.component.scss'],
   standalone: true,
-  imports: [CommonModule, IonIcon, IonToggle],
+  imports: [
+    CommonModule,
+    IonIcon,
+    IonToggle,
+    IonModal,
+    IonInput,
+    IonItem,
+    IonLabel,
+    IonButton,
+    IonButtons,
+    IonHeader,
+    IonToolbar,
+    IonTitle,
+    IonContent,
+  ],
 })
 export class PlayerAreaComponent {
   @Input({ required: true }) player!: Player;
@@ -21,17 +58,29 @@ export class PlayerAreaComponent {
   public gameService = inject(GameService);
 
   constructor() {
-    addIcons({ shieldHalfOutline, chevronDownOutline, heart });
+    addIcons({
+      shieldHalfOutline,
+      chevronDownOutline,
+      heart,
+      settingsOutline,
+      skullOutline,
+      closeOutline,
+      starOutline,
+      flashOutline,
+      checkmarkCircle,
+    });
   }
 
   // Computed states for the template
   public isPartnerMode = computed(() => {
-    const p = this.gameService.players().find(x => x.id === this.player.id);
+    const p = this.gameService.players().find((x) => x.id === this.player.id);
     return p ? !!p.hasPartner : false;
   });
 
-  public isDamageMode = computed(() => this.gameService.commanderDamageTarget() !== null);
-  
+  public isDamageMode = computed(
+    () => this.gameService.commanderDamageTarget() !== null,
+  );
+
   public isTarget = computed(() => {
     const targetId = this.gameService.commanderDamageTarget();
     return targetId !== null && this.player && targetId === this.player.id;
@@ -45,7 +94,9 @@ export class PlayerAreaComponent {
     if (!this.isSource()) return 0;
     const targetId = this.gameService.commanderDamageTarget();
     if (targetId === null) return 0;
-    const targetPlayer = this.gameService.players().find(p => p.id === targetId);
+    const targetPlayer = this.gameService
+      .players()
+      .find((p) => p.id === targetId);
     return targetPlayer?.commanderDamage?.[this.player.id] || 0;
   });
 
@@ -53,19 +104,57 @@ export class PlayerAreaComponent {
     if (!this.isSource()) return 0;
     const targetId = this.gameService.commanderDamageTarget();
     if (targetId === null) return 0;
-    const targetPlayer = this.gameService.players().find(p => p.id === targetId);
+    const targetPlayer = this.gameService
+      .players()
+      .find((p) => p.id === targetId);
     return targetPlayer?.partnerDamage?.[this.player.id] || 0;
   });
 
+  // Livello 2: Poison Mode
+  public isPoisonModeActive = computed(
+    () => this.gameService.poisonTargetMode() !== null,
+  );
+  public isPoisonTarget = computed(
+    () =>
+      this.isPoisonModeActive() &&
+      this.gameService.poisonTargetMode() === this.player.id,
+  );
+  public isPoisonSource = computed(
+    () => this.isPoisonModeActive() && !this.isPoisonTarget(),
+  ); // When one is editing poison, others darken
+
+  // Livello 2: Status
+  public isMonarch = computed(
+    () => this.gameService.monarchPlayerId() === this.player.id,
+  );
+  public hasInitiative = computed(
+    () => this.gameService.initiativePlayerId() === this.player.id,
+  );
+  public isMonarchInPlay = computed(
+    () => this.gameService.monarchPlayerId() !== null,
+  );
+  public isInitiativeInPlay = computed(
+    () => this.gameService.initiativePlayerId() !== null,
+  );
+
+  // Livello 2: Settings local state
+  public isSettingsOpen = signal(false);
+  public tempName = signal('');
+  public tempColor = signal('');
+
+  get MTG_COLORS() {
+    return MTG_COLORS;
+  }
+
   async increment() {
-    if (this.player && !this.isDamageMode()) {
+    if (this.player && !this.isDamageMode() && !this.isPoisonModeActive()) {
       await Haptics.impact({ style: ImpactStyle.Light });
       this.gameService.updatePlayerLife(this.player.id, 1);
     }
   }
 
   async decrement() {
-    if (this.player && !this.isDamageMode()) {
+    if (this.player && !this.isDamageMode() && !this.isPoisonModeActive()) {
       await Haptics.impact({ style: ImpactStyle.Light });
       this.gameService.updatePlayerLife(this.player.id, -1);
     }
@@ -83,16 +172,103 @@ export class PlayerAreaComponent {
     this.gameService.setCommanderDamageTarget(null);
   }
 
-  async changeCommanderDamageDirect(delta: number, isPartner: boolean, event: Event) {
+  async changeCommanderDamageDirect(
+    delta: number,
+    isPartner: boolean,
+    event: Event,
+  ) {
     event.stopPropagation();
     await Haptics.impact({ style: ImpactStyle.Light });
     const targetId = this.gameService.commanderDamageTarget();
     if (targetId !== null && this.player) {
-      this.gameService.updateCommanderDamage(targetId, this.player.id, isPartner, delta);
+      this.gameService.updateCommanderDamage(
+        targetId,
+        this.player.id,
+        isPartner,
+        delta,
+      );
     }
   }
 
   togglePartner(event: any) {
     this.gameService.togglePartnerMode(this.player.id, event.detail.checked);
+  }
+
+  // Poison Events
+  enterPoisonMode(event: Event) {
+    event.stopPropagation();
+    if (this.player) {
+      this.gameService.setPoisonTargetMode(this.player.id);
+    }
+  }
+
+  exitPoisonMode(event: Event) {
+    event.stopPropagation();
+    this.gameService.setPoisonTargetMode(null);
+  }
+
+  async changePoisonDirect(delta: number, event: Event) {
+    event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Light });
+    this.gameService.updatePoison(this.player.id, delta);
+  }
+
+  // Settings Events
+  openSettings(event: Event) {
+    event.stopPropagation();
+    
+    // Rimuoviamo eventuale cache di "Player X" dai vecchi test
+    let currentName = this.player.name;
+    if (currentName?.startsWith('Player ')) {
+      currentName = undefined;
+    }
+    
+    this.tempName.set(currentName || `GIOCATORE ${this.player.id}`);
+    this.tempColor.set(this.player.color);
+    this.isSettingsOpen.set(true);
+  }
+
+  closeSettings() {
+    this.isSettingsOpen.set(false);
+  }
+
+  saveSettings() {
+    this.gameService.updatePlayerIdentity(
+      this.player.id,
+      this.tempName(),
+      this.tempColor(),
+    );
+    this.isSettingsOpen.set(false);
+  }
+
+  claimMonarch() {
+    this.gameService.setMonarch(this.player.id);
+  }
+
+  claimInitiative() {
+    this.gameService.setInitiative(this.player.id);
+  }
+
+  claimMonarchMain(event: Event) {
+    event.stopPropagation();
+    this.claimMonarch();
+  }
+
+  claimInitiativeMain(event: Event) {
+    event.stopPropagation();
+    this.claimInitiative();
+  }
+
+  assignPoisonFromSettings(event: Event) {
+    this.enterPoisonMode(event);
+    this.closeSettings();
+  }
+
+  selectColor(color: string) {
+    this.tempColor.set(color);
+  }
+
+  onNameChange(event: any) {
+    this.tempName.set(event.detail.value);
   }
 }
