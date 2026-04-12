@@ -1,20 +1,26 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content [fullscreen]="true" [scrollY]="false">
+  <div class="game-board" [ngClass]="layoutClass">
+    
+    <app-player-area 
+      *ngFor="let p of players(); let i = index" 
+      [player]="p"
+      [extraClass]="p.cssClass || ''"
+      class="player-slot"
+      [ngClass]="'player-' + (p.id)">
+    </app-player-area>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
   </div>
 </ion-content>
+
+<ion-footer class="ion-no-border">
+  <ion-toolbar class="minimal-footer">
+    <div class="footer-buttons">
+      <ion-button fill="clear" color="medium" (click)="goBack()">
+        <ion-icon name="home" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" color="medium" (click)="reset()">
+        <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

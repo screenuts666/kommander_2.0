@@ -1,0 +1,86 @@
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  container-type: size;
+}
+
+.player-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+
+  /* CRITICAL UX FIXES for double tap zoom and text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  box-sizing: border-box;
+}
+
+.flipped,
+.rotate-180 {
+  transform: rotate(180deg);
+}
+
+.rotate-90 {
+  top: 50%;
+  left: 50%;
+  width: 100cqh;
+  height: 100cqw;
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.rotate-270 {
+  top: 50%;
+  left: 50%;
+  width: 100cqh;
+  height: 100cqw;
+  transform: translate(-50%, -50%) rotate(270deg);
+}
+
+.life-display {
+  position: absolute;
+  pointer-events: none; /* Allows clicks to pass through to the touch zones */
+  text-align: center;
+  color: white;
+  text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.life-total {
+  font-size: 6.5rem;
+  font-weight: 800;
+  font-family: Inter, Roboto, "Helvetica Neue", sans-serif;
+  line-height: +1;
+}
+
+.touch-zone {
+  width: 100%;
+  height: 50%;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  z-index: 10;
+}
+
+.touch-zone.plus:active {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.15) 0%,
+    transparent 100%
+  );
+}
+
+.touch-zone.minus:active {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.25) 0%, transparent 100%);
+}

@@ -1,27 +1,112 @@
-#container {
-  text-align: center;
-
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+ion-content {
+  --background: #000000;
 }
 
-#container strong {
-  font-size: 20px;
-  line-height: 26px;
+.game-board {
+  display: grid;
+  width: 100vw;
+  height: 100%; /* Adapts to ion-content space automatically */
+  position: relative;
 }
 
-#container p {
-  font-size: 16px;
-  line-height: 22px;
-
-  color: #8c8c8c;
-
-  margin: 0;
+/* Minimalist Footer */
+.minimal-footer {
+  --background: #060606;
+  --min-height: 55px;
+  border-top: 1px solid #222;
 }
 
-#container a {
-  text-decoration: none;
+.footer-buttons {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 0 16px;
+  height: 55px;
+  
+  ion-button {
+    margin: 0;
+    --padding-start: 12px;
+    --padding-end: 12px;
+    
+    ion-icon {
+      font-size: 26px;
+    }
+  }
+}
+
+/* Base Layout Types */
+
+/* 1 Player */
+.layout-single {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+/* 2 Players */
+.layout-1v1-opposite {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+.layout-1v1-side-by-side {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+
+/* 3 Players */
+.layout-3-around {
+  /* top 1, bottom 2 */
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  .player-1 { grid-column: 1 / span 2; }
+}
+
+/* 4 Players */
+.layout-2v2-opposite {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+}
+.layout-4-around {
+  /* 4-around: 1 head top, 1 head bottom, 2 sides */
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 2fr 1fr;
+  .player-1 { grid-column: 1 / span 2; grid-row: 1; } /* Top row */
+  .player-2 { grid-column: 1; grid-row: 2; } /* Mid Left */
+  .player-4 { grid-column: 2; grid-row: 2; } /* Mid Right */
+  .player-3 { grid-column: 1 / span 2; grid-row: 3; } /* Bottom row */
+}
+
+/* 5 Players */
+.layout-5-around {
+  /* 1 head top, 2 on left, 2 on right */
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1.5fr 1.5fr;
+  .player-1 { grid-column: 1 / span 2; grid-row: 1; } /* Top Head */
+  .player-2 { grid-column: 1; grid-row: 2; } /* Left 1 */
+  .player-3 { grid-column: 2; grid-row: 2; } /* Right 1 */
+  .player-4 { grid-column: 1; grid-row: 3; } /* Left 2 */
+  .player-5 { grid-column: 2; grid-row: 3; } /* Right 2 */
+}
+
+/* 6 Players */
+.layout-3v3-opposite {
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+.layout-6-around {
+  /* 2 Heads, 4 sides */
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 2fr 2fr 1fr; /* 1/6 for heads, 2/6 for sides */
+
+  .player-1 { grid-column: 1 / span 2; grid-row: 1; } /* Top Head */
+  .player-2 { grid-column: 1; grid-row: 2; } /* Left 1 */
+  .player-3 { grid-column: 2; grid-row: 2; } /* Right 1 */
+  .player-4 { grid-column: 1; grid-row: 3; } /* Left 2 */
+  .player-5 { grid-column: 2; grid-row: 3; } /* Right 2 */
+  .player-6 { grid-column: 1 / span 2; grid-row: 4; } /* Bottom Head */
+}
+
+/* Important to make slot fill entirely */
+.player-slot {
+  width: 100%;
+  height: 100%;
 }

@@ -1,0 +1,15 @@
+<div
+  class="player-container"
+  [ngClass]="[player.isFlipped ? 'flipped' : '', extraClass]"
+  [ngStyle]="{ 'background-color': player.color }"
+>
+  <div class="touch-zone plus" (click)="increment()"></div>
+
+  <div class="life-display">
+    <span class="life-total">{{ player.life }}</span>
+  </div>
+
+  <div class="touch-zone minus" (click)="decrement()"></div>
+  
+  <!-- For future use: Player name / Commander Damage display area -->
+</div>

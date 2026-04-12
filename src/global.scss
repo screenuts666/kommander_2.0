@@ -35,3 +35,44 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+/* Minimal Dark Alert Style */
+.minimal-dark-alert {
+  --background: #0a0a0a;
+  --backdrop-opacity: 0.8;
+  
+  .alert-wrapper {
+    border-radius: 16px !important;
+    border: 1px solid #1a1a1a;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9);
+  }
+  
+  .alert-title {
+    font-weight: 800 !important;
+    color: #ffffff !important;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .alert-message {
+    color: #888888 !important;
+  }
+
+  .alert-button-group {
+    border-top: 1px solid #1a1a1a !important;
+  }
+
+  .alert-button {
+    border-color: #1a1a1a !important;
+  }
+
+  .alert-button.alert-button-role-cancel {
+    color: #666666 !important;
+    font-weight: 500 !important;
+  }
+
+  .alert-button.alert-button-role-destructive {
+    color: #ffffff !important;
+    font-weight: 700 !important;
+  }
+}

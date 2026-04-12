@@ -1,0 +1,54 @@
+<ion-content [fullscreen]="true" class="setup-content">
+  <div class="setup-container">
+    <div class="header-section">
+      <h1 class="brand-title">COMMANDER</h1>
+      <h2 class="brand-subtitle">TRACKER</h2>
+    </div>
+
+    <div class="settings-card">
+      <div class="card-header">NEW GAME</div>
+      <ion-list lines="none" class="minimal-list">
+        
+        <!-- Punti Vita -->
+        <ion-item class="minimal-item">
+          <ion-icon name="heart-outline" slot="start" class="subtle-icon"></ion-icon>
+          <ion-select label="Starting Life" labelPlacement="stacked" [(ngModel)]="startingLife" interface="popover" class="sleek-select">
+            <ion-select-option [value]="20">20 HP</ion-select-option>
+            <ion-select-option [value]="30">30 HP</ion-select-option>
+            <ion-select-option [value]="40">40 HP</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Numero Giocatori -->
+        <ion-item class="minimal-item">
+          <ion-icon name="people-outline" slot="start" class="subtle-icon"></ion-icon>
+          <ion-select label="Players" labelPlacement="stacked" [(ngModel)]="numPlayers" (ionChange)="onPlayersChange()" interface="popover" class="sleek-select">
+            <ion-select-option [value]="1">1 Player</ion-select-option>
+            <ion-select-option [value]="2">2 Players</ion-select-option>
+            <ion-select-option [value]="3">3 Players</ion-select-option>
+            <ion-select-option [value]="4">4 Players</ion-select-option>
+            <ion-select-option [value]="5">5 Players</ion-select-option>
+            <ion-select-option [value]="6">6 Players</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <!-- Layout Tavolo -->
+        <ion-item class="minimal-item">
+          <ion-icon name="grid-outline" slot="start" class="subtle-icon"></ion-icon>
+          <ion-select label="Board Layout" labelPlacement="stacked" [(ngModel)]="layout" interface="popover" class="sleek-select">
+            <ion-select-option *ngFor="let opt of layoutOptions" [value]="opt.value">
+              {{ opt.label }}
+            </ion-select-option>
+          </ion-select>
+        </ion-item>
+
+      </ion-list>
+    </div>
+
+    <div class="action-section">
+      <ion-button expand="block" shape="round" fill="solid" class="start-btn" (click)="startGame()">
+        START GAME
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
