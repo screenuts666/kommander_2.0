@@ -1,0 +1,7 @@
+{
+  "name": "commander-tracker",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
