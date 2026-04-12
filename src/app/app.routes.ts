@@ -8,6 +8,6 @@ export const routes: Routes = [
   },
   {
     path: 'board',
-    loadComponent: () => import('./home/home.page').then((m) => m.HomePage),
+    loadComponent: () => import('./board/board.page').then((m) => m.BoardPage),
   }
 ];

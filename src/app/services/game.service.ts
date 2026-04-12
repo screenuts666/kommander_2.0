@@ -59,6 +59,7 @@ export class GameService {
 
   public updateSettings(newSettings: GameSettings) {
     this.settings.set(newSettings);
+    this.commanderDamageTarget.set(null); // Fix: pulisce sempre la modalità danni
     this.initPlayers(newSettings);
   }
 

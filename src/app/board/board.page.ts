@@ -8,13 +8,13 @@ import { PlayerAreaComponent } from '../components/player-area/player-area.compo
 import { GameService } from '../services/game.service';
 
 @Component({
-  selector: 'app-home',
-  templateUrl: 'home.page.html',
-  styleUrls: ['home.page.scss'],
+  selector: 'app-board',
+  templateUrl: 'board.page.html',
+  styleUrls: ['board.page.scss'],
   standalone: true,
   imports: [IonContent, PlayerAreaComponent, CommonModule, IonButton, IonIcon, IonFooter, IonToolbar, IonSpinner],
 })
-export class HomePage {
+export class BoardPage {
   public gameService = inject(GameService);
   private router = inject(Router);
   private alertCtrl = inject(AlertController);
