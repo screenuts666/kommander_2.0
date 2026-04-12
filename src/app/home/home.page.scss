@@ -110,3 +110,16 @@ ion-content {
   width: 100%;
   height: 100%;
 }
+
+.loading-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #000000;
+  
+  ion-spinner {
+    transform: scale(1.5);
+  }
+}

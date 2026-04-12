@@ -1,6 +1,6 @@
 import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonContent, IonButton, IonIcon, AlertController, IonFooter, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonButton, IonIcon, AlertController, IonFooter, IonToolbar, IonSpinner } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { home, refresh } from 'ionicons/icons';
@@ -12,7 +12,7 @@ import { GameService } from '../services/game.service';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonContent, PlayerAreaComponent, CommonModule, IonButton, IonIcon, IonFooter, IonToolbar],
+  imports: [IonContent, PlayerAreaComponent, CommonModule, IonButton, IonIcon, IonFooter, IonToolbar, IonSpinner],
 })
 export class HomePage {
   public gameService = inject(GameService);

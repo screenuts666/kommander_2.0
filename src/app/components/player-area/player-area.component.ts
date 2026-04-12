@@ -5,6 +5,7 @@ import { GameService } from '../../services/game.service';
 import { IonIcon, IonToggle } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { shieldHalfOutline, chevronDownOutline, heart } from 'ionicons/icons';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 
 @Component({
   selector: 'app-player-area',
@@ -18,15 +19,17 @@ export class PlayerAreaComponent {
   @Input() extraClass: string = '';
 
   public gameService = inject(GameService);
-  
-  // Local state for source partner mode
-  public isPartnerMode = signal<boolean>(false);
 
   constructor() {
     addIcons({ shieldHalfOutline, chevronDownOutline, heart });
   }
 
   // Computed states for the template
+  public isPartnerMode = computed(() => {
+    const p = this.gameService.players().find(x => x.id === this.player.id);
+    return p ? !!p.hasPartner : false;
+  });
+
   public isDamageMode = computed(() => this.gameService.commanderDamageTarget() !== null);
   
   public isTarget = computed(() => {
@@ -54,14 +57,16 @@ export class PlayerAreaComponent {
     return targetPlayer?.partnerDamage?.[this.player.id] || 0;
   });
 
-  increment() {
+  async increment() {
     if (this.player && !this.isDamageMode()) {
+      await Haptics.impact({ style: ImpactStyle.Light });
       this.gameService.updatePlayerLife(this.player.id, 1);
     }
   }
 
-  decrement() {
+  async decrement() {
     if (this.player && !this.isDamageMode()) {
+      await Haptics.impact({ style: ImpactStyle.Light });
       this.gameService.updatePlayerLife(this.player.id, -1);
     }
   }
@@ -78,8 +83,9 @@ export class PlayerAreaComponent {
     this.gameService.setCommanderDamageTarget(null);
   }
 
-  changeCommanderDamageDirect(delta: number, isPartner: boolean, event: Event) {
+  async changeCommanderDamageDirect(delta: number, isPartner: boolean, event: Event) {
     event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Light });
     const targetId = this.gameService.commanderDamageTarget();
     if (targetId !== null && this.player) {
       this.gameService.updateCommanderDamage(targetId, this.player.id, isPartner, delta);
@@ -87,6 +93,6 @@ export class PlayerAreaComponent {
   }
 
   togglePartner(event: any) {
-    this.isPartnerMode.set(event.detail.checked);
+    this.gameService.togglePartnerMode(this.player.id, event.detail.checked);
   }
 }

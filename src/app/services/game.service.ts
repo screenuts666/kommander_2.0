@@ -1,5 +1,6 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, effect } from '@angular/core';
 import { GameSettings, Player, MTG_COLORS, LayoutType } from '../models/game.model';
+import { Preferences } from '@capacitor/preferences';
 
 @Injectable({
   providedIn: 'root'
@@ -14,9 +15,46 @@ export class GameService {
 
   public players = signal<Player[]>([]);
   public commanderDamageTarget = signal<number | null>(null);
+  
+  // Flag per comunicare alla view quando i dati Async sono pronti per essere dipinti
+  public isReady = signal<boolean>(false);
 
   constructor() {
-    this.initPlayers(this.settings());
+    this.loadSavedState();
+
+    effect(() => {
+      // Ascoltiamo l'intero blocco di dati sensibili
+      const ready = this.isReady();
+      const s = this.settings();
+      const p = this.players();
+      const c = this.commanderDamageTarget();
+
+      // Salva solo dopo che il caricamento differito è terminato
+      if (ready) {
+        const payload = { settings: s, players: p, commanderDamageTarget: c };
+        Preferences.set({ key: 'mtgTrackerState', value: JSON.stringify(payload) });
+      }
+    });
+  }
+
+  private async loadSavedState() {
+    const { value } = await Preferences.get({ key: 'mtgTrackerState' });
+    
+    if (value) {
+      try {
+        const parsed = JSON.parse(value);
+        this.settings.set(parsed.settings);
+        this.players.set(parsed.players);
+        this.commanderDamageTarget.set(parsed.commanderDamageTarget);
+      } catch(e) {
+        // Fallback in caso di corruzione del JSON salvato
+        this.initPlayers(this.settings());
+      }
+    } else {
+      this.initPlayers(this.settings());
+    }
+    
+    this.isReady.set(true);
   }
 
   public updateSettings(newSettings: GameSettings) {
@@ -138,10 +176,17 @@ export class GameService {
         isFlipped: isFlipped,
         cssClass: cssClass,
         commanderDamage: {},
-        partnerDamage: {}
+        partnerDamage: {},
+        hasPartner: false
       });
     }
 
     this.players.set(newPlayers);
+  }
+
+  public togglePartnerMode(playerId: number, isEnabled: boolean) {
+    this.players.update(players => 
+      players.map(p => p.id === playerId ? { ...p, hasPartner: isEnabled } : p)
+    );
   }
 }

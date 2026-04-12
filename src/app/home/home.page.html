@@ -1,16 +1,22 @@
 <ion-content [fullscreen]="true" [scrollY]="false">
-  <div class="game-board" [ngClass]="layoutClass">
-    
-    @for (p of players(); track p.id; let i = $index) {
-      <app-player-area 
-        [player]="p"
-        [extraClass]="p.cssClass || ''"
-        class="player-slot"
-        [ngClass]="'player-' + (p.id)">
-      </app-player-area>
-    }
+  @if (!gameService.isReady()) {
+    <div class="loading-wrapper">
+      <ion-spinner name="crescent" color="light"></ion-spinner>
+    </div>
+  } @else {
+    <div class="game-board" [ngClass]="layoutClass">
+      
+      @for (p of players(); track p.id; let i = $index) {
+        <app-player-area 
+          [player]="p"
+          [extraClass]="p.cssClass || ''"
+          class="player-slot"
+          [ngClass]="'player-' + (p.id)">
+        </app-player-area>
+      }
 
-  </div>
+    </div>
+  }
 </ion-content>
 
 <ion-footer class="ion-no-border">
