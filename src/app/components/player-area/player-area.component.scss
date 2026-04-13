@@ -17,10 +17,10 @@
   justify-content: center;
   align-items: center;
   border: 1px solid rgba(0, 0, 0, 0.4);
-  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5); /* Vignette per un look premium e contrasto */
+  box-shadow: inset 0 0 80px rgba(0, 0, 0, 0.5);
   overflow: hidden;
 
-  /* CRITICAL UX FIXES for double tap zoom and text selection */
+  /* CRITICAL UX FIXES */
   user-select: none;
   -webkit-user-select: none;
   box-sizing: border-box;
@@ -72,23 +72,27 @@
   text-shadow: 0px 8px 18px rgba(0, 0, 0, 0.7);
 }
 
-.commander-tax-badge {
+/* Anteprima Tassa Comandante */
+.commander-tax-badge-preview {
+  position: absolute;
+  top: 16px;
+  left: 16px;
   display: flex;
   align-items: center;
   gap: 4px;
-  margin-top: 8px;
   font-size: 0.9rem;
   color: rgba(255, 255, 255, 0.8);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
   padding: 4px 12px;
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  
+  z-index: 15;
+
   .tax-icon {
     font-size: 0.8rem;
     opacity: 0.7;
   }
-  
   .tax-value {
     font-weight: 600;
     font-size: 0.95rem;
@@ -150,13 +154,17 @@
   align-items: center;
   gap: 8px;
   z-index: 15;
-  pointer-events: none; /* Let clicks pass unless on settings trigger */
+  pointer-events: none;
 
   .status-icon {
     font-size: 20px;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-    &.monarch-icon { color: #facc15; }
-    &.initiative-icon { color: #22d3ee; }
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.8));
+    &.monarch-icon {
+      color: #facc15;
+    }
+    &.initiative-icon {
+      color: #22d3ee;
+    }
   }
 
   .player-name {
@@ -165,7 +173,7 @@
     font-size: 1.1rem;
     letter-spacing: 2px;
     text-transform: uppercase;
-    text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
   }
 
   .settings-trigger {
@@ -174,7 +182,9 @@
     color: rgba(255, 255, 255, 0.5);
     cursor: pointer;
     transition: color 0.2s;
-    &:active { color: white; }
+    &:active {
+      color: white;
+    }
   }
 }
 
@@ -188,7 +198,9 @@
   z-index: 50;
 }
 
-.commander-btn-wrapper, .poison-btn-wrapper, .status-btn-wrapper {
+.commander-btn-wrapper,
+.poison-btn-wrapper,
+.status-btn-wrapper {
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -201,21 +213,25 @@
   color: white;
   font-size: 24px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   transition: transform 0.2s;
   position: relative;
   pointer-events: auto;
-  
+
   &:active {
     transform: scale(0.9);
   }
 }
 
+/* Pulsanti Status nella Board: Bianchi e Neri */
 .status-btn-wrapper {
-  &.monarch { color: #facc15; }
-  &.initiative { color: #22d3ee; }
-  
-  /* Greyed out when status already claimed */
+  &.monarch {
+    color: white;
+  }
+  &.initiative {
+    color: white;
+  }
+
   &:not(.monarch):not(.initiative) {
     opacity: 0.4;
     filter: grayscale(100%);
@@ -223,7 +239,7 @@
 }
 
 .poison-btn-wrapper {
-  color: #a3e635; /* Toxic green */
+  color: #a3e635;
   .poison-badge {
     position: absolute;
     top: -6px;
@@ -242,18 +258,23 @@
   }
 }
 
-.target-mode-wrapper, .source-mode-wrapper {
+/* Schermi Opachi (Sfondo nero senza trasparenze) */
+.target-mode-wrapper,
+.source-mode-wrapper {
   position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 20;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   padding: 20px 16px;
-  background-color: rgba(0, 0, 0, 1);
+  background-color: #000000 !important;
   background-image: none;
-  
+
   &::before {
     display: none;
   }
@@ -291,7 +312,7 @@
   justify-content: space-between;
   align-items: flex-end;
   width: 100%;
-  padding-bottom: 8px; /* Extra breathing space for the exit button */
+  padding-bottom: 8px;
 
   .life-reminder {
     display: flex;
@@ -301,7 +322,7 @@
     font-size: 3rem;
     font-weight: 800;
     line-height: 1;
-    
+
     ion-icon {
       font-size: 1.2rem;
       color: #ff4444;
@@ -320,8 +341,8 @@
     align-items: center;
     color: white;
     font-size: 32px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-    
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+
     &:active {
       background: rgba(255, 255, 255, 0.3);
     }
@@ -331,14 +352,13 @@
 /* --- SOURCE UI --- */
 .source-mode-wrapper {
   align-items: center;
-  background: rgba(0, 0, 0, 0.45); /* darken opponent screens a bit */
 }
 
 .partner-switch-container {
   display: flex;
   align-items: center;
   gap: 12px;
-  
+
   span {
     color: white;
     font-weight: 600;
@@ -352,13 +372,13 @@
   align-items: center;
   background: rgba(10, 10, 10, 0.95);
   border-radius: 32px;
-  border: 1px solid rgba(255,255,255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   padding: 4px;
   width: 160px;
   height: 52px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
   backdrop-filter: none;
-  
+
   .pill-btn {
     background: transparent;
     border: none;
@@ -370,12 +390,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     &:active {
       opacity: 0.5;
     }
   }
-  
+
   .pill-val {
     flex: 1;
     text-align: center;
@@ -397,9 +417,9 @@
     align-items: center;
     background: rgba(10, 10, 10, 0.95);
     border-radius: 28px;
-    border: 1px solid rgba(255,255,255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     padding: 3px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
     backdrop-filter: none;
 
     .pill-btn {
@@ -413,12 +433,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      
+
       &:active {
         opacity: 0.5;
       }
     }
-    
+
     .pill-val {
       flex: 1;
       text-align: center;
@@ -442,24 +462,27 @@
  * ------------------------------------- */
 
 .poison-theme {
-  background: rgba(0, 0, 0, 0.95) !important;
+  background: #000000 !important;
   box-shadow: none;
-  .target-name { 
-    color: #a3e635; 
+  .target-name {
+    color: #a3e635;
     font-size: 1.2rem;
   }
-  .poison-val { color: #a3e635; }
+  .poison-val {
+    color: #a3e635;
+  }
   .poison-exit {
-    background: rgba(163, 230, 53, 0.2); 
+    background: rgba(163, 230, 53, 0.2);
     border: 1px solid rgba(163, 230, 53, 0.5);
     color: #a3e635;
-    &:active { background: rgba(163, 230, 53, 0.4); }
+    &:active {
+      background: rgba(163, 230, 53, 0.4);
+    }
   }
 }
 
 .idle-overlay {
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(8px);
+  background: #000000 !important;
 }
 
 .player-settings-modal {
@@ -509,7 +532,9 @@
       height: 44px;
       border-radius: 50%;
       border: 2px solid transparent;
-      transition: transform 0.2s, border-color 0.2s;
+      transition:
+        transform 0.2s,
+        border-color 0.2s;
       &.selected {
         border-color: #ffffff;
         transform: scale(1.1);
@@ -523,7 +548,7 @@
     flex-direction: column;
     gap: 12px;
     margin-top: 8px;
-    
+
     .status-btn {
       margin: 0;
       height: 48px;
@@ -542,33 +567,46 @@
   }
 }
 
-/* Delta Preview - Shows temporary +/- indicator */
+/* Delta Preview */
 .delta-preview {
   position: absolute;
   top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  left: 32px;
+  transform: translateY(-50%);
   pointer-events: none;
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 900;
-  color: #4ade80; /* Success Green */
-  text-shadow: 0 0 16px rgba(74, 222, 128, 0.9), 0 3px 8px rgba(0,0,0,0.9);
+  color: #4ade80;
+  text-shadow:
+    0 0 16px rgba(74, 222, 128, 0.9),
+    0 3px 8px rgba(0, 0, 0, 0.9);
   z-index: 100;
-  animation: deltaFade 2s ease-out forwards;
-  
+  animation: deltaFade 1.5s ease-out forwards;
+
   &.negative {
-    color: #f87171; /* Error Red */
-    text-shadow: 0 0 16px rgba(248, 113, 113, 0.9), 0 3px 8px rgba(0,0,0,0.9);
+    color: #f87171;
+    text-shadow:
+      0 0 16px rgba(248, 113, 113, 0.9),
+      0 3px 8px rgba(0, 0, 0, 0.9);
   }
 }
 
 @keyframes deltaFade {
-  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+  0% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-50%) scale(0.8);
+  }
 }
 
-/* Commander Tax UI */
+/* Commander Tax UI nel modale */
 .commander-tax-section {
   background: rgba(255, 255, 255, 0.05);
   border-radius: 16px;
@@ -585,7 +623,7 @@
     background: #000;
     border-radius: 30px;
     padding: 4px;
-    border: 1px solid rgba(255,255,255,0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
     width: 160px;
     height: 50px;
 
@@ -599,7 +637,9 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      &:active { opacity: 0.5; }
+      &:active {
+        opacity: 0.5;
+      }
     }
 
     .tax-val {
@@ -618,4 +658,3 @@
     letter-spacing: 1px;
   }
 }
-

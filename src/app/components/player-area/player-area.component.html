@@ -3,92 +3,101 @@
   [ngClass]="[player.isFlipped ? 'flipped' : '', extraClass]"
   [ngStyle]="{ background: player.color }"
 >
-  <div class="player-header" [hidden]="isDamageMode() || isPoisonModeActive()">
-    @if (isMonarch()) {
-      <fa-icon class="status-icon monarch-icon" [icon]="faCrown"></fa-icon>
-    }
-    @if (hasInitiative()) {
+  @if (!isDamageMode() && !isPoisonModeActive()) {
+    <div class="player-header">
+      @if (isMonarch()) {
+        <fa-icon class="status-icon monarch-icon" [icon]="faCrown"></fa-icon>
+      }
+      @if (hasInitiative()) {
+        <fa-icon
+          class="status-icon initiative-icon"
+          [icon]="faBoltLightning"
+        ></fa-icon>
+      }
+      <span class="player-name">{{
+        player.name || "GIOCATORE " + player.id
+      }}</span>
       <fa-icon
-        class="status-icon initiative-icon"
-        [icon]="faBoltLightning"
+        class="settings-trigger"
+        [icon]="faCog"
+        (click)="openSettings($event)"
       ></fa-icon>
-    }
-    <span class="player-name">{{
-      player.name || "GIOCATORE " + player.id
-    }}</span>
-    <fa-icon
-      class="settings-trigger"
-      [icon]="faCog"
-      (click)="openSettings($event)"
-    ></fa-icon>
-  </div>
+    </div>
 
-  <!-- 1. MODALITÀ NORMALE -->
-  <div class="normal-mode-ui" [hidden]="isDamageMode() || isPoisonModeActive()">
-    <div class="action-buttons-container">
-      @if (player.poison > 0) {
-        <div class="poison-btn-wrapper" (click)="enterPoisonMode($event)">
-          <fa-icon [icon]="faSkull"></fa-icon>
-          <span class="poison-badge">{{ player.poison }}</span>
+    <div class="normal-mode-ui">
+      @if (player.commanderTax && player.commanderTax > 0) {
+        <div class="commander-tax-badge-preview">
+          <fa-icon [icon]="faCog" class="tax-icon"></fa-icon>
+          <span class="tax-value">{{ player.commanderTax }}</span>
         </div>
       }
 
-      @if (isMonarchInPlay() && !isMonarch()) {
-        <div class="status-btn-wrapper monarch" (click)="claimMonarchMain($event)">
-          <fa-icon [icon]="faCrown"></fa-icon>
-        </div>
-      }
+      <div class="action-buttons-container">
+        @if (player.poison > 0) {
+          <div class="poison-btn-wrapper" (click)="enterPoisonMode($event)">
+            <fa-icon [icon]="faSkull"></fa-icon>
+            <span class="poison-badge">{{ player.poison }}</span>
+          </div>
+        }
 
-      @if (isInitiativeInPlay() && !hasInitiative()) {
-        <div class="status-btn-wrapper initiative" (click)="claimInitiativeMain($event)">
-          <fa-icon [icon]="faBoltLightning"></fa-icon>
-        </div>
-      }
-      @if (!isDamageMode() && !isPoisonModeActive()) {
+        @if (isMonarchInPlay() && !isMonarch()) {
+          <div
+            class="status-btn-wrapper monarch"
+            (click)="claimMonarchMain($event)"
+          >
+            <fa-icon [icon]="faCrown"></fa-icon>
+          </div>
+        }
+
+        @if (isInitiativeInPlay() && !hasInitiative()) {
+          <div
+            class="status-btn-wrapper initiative"
+            (click)="claimInitiativeMain($event)"
+          >
+            <fa-icon [icon]="faBoltLightning"></fa-icon>
+          </div>
+        }
+
         <div
           class="commander-btn-wrapper"
           (click)="enterCommanderDamageMode($event)"
         >
           <fa-icon [icon]="faShield"></fa-icon>
         </div>
-      }
-    </div>
+      </div>
 
-    <!-- Tzone -->
-    <div 
-      class="touch-zone plus" 
-      (click)="handleTap(1, $event)"
-      (mousedown)="startHold(1)"
-      (mouseup)="endHold()"
-      (touchstart)="startHold(1)"
-      (touchend)="endHold()"
-    ></div>
-    <div class="life-display">
-      <span class="life-total">{{ player.life }}</span>
-      @if (player.commanderTax && player.commanderTax > 0) {
-        <div class="commander-tax-badge">
-          <fa-icon [icon]="faCog" class="tax-icon"></fa-icon>
-          <span class="tax-value">{{ player.commanderTax }}</span>
+      <div
+        class="touch-zone plus"
+        (click)="handleTap(1, $event)"
+        (mousedown)="startHold(1)"
+        (mouseup)="endHold()"
+        (mouseleave)="endHold()"
+        (touchstart)="startHold(1)"
+        (touchend)="endHold()"
+        (touchcancel)="endHold()"
+      ></div>
+      <div class="life-display">
+        <span class="life-total">{{ player.life }}</span>
+      </div>
+      <div
+        class="touch-zone minus"
+        (click)="handleTap(-1, $event)"
+        (mousedown)="startHold(-1)"
+        (mouseup)="endHold()"
+        (mouseleave)="endHold()"
+        (touchstart)="startHold(-1)"
+        (touchend)="endHold()"
+        (touchcancel)="endHold()"
+      ></div>
+
+      @if (deltaVisible()) {
+        <div class="delta-preview" [class.negative]="recentDelta() < 0">
+          {{ recentDelta() > 0 ? "+" : "" }}{{ recentDelta() }}
         </div>
       }
     </div>
-    <div 
-      class="touch-zone minus" 
-      (click)="handleTap(-1, $event)"
-      (mousedown)="startHold(-1)"
-      (mouseup)="endHold()"
-      (touchstart)="startHold(-1)"
-      (touchend)="endHold()"
-    ></div>
+  }
 
-    @if (recentDelta() !== 0) {
-      <div class="delta-preview" [class.negative]="recentDelta() < 0">
-        {{ recentDelta() > 0 ? '+' : '' }}{{ recentDelta() }}
-      </div>
-    }
-  </div>
-
-  <!-- 2. MODALITÀ DANNO COMANDANTE -->
   @if (isTarget()) {
     <div class="target-mode-wrapper">
       <div class="target-header">
@@ -176,7 +185,6 @@
     </div>
   }
 
-  <!-- 3. MODALITÀ VELENO -->
   @if (isPoisonTarget()) {
     <div class="target-mode-wrapper poison-theme">
       <div class="target-header">
@@ -216,7 +224,6 @@
     <div class="source-mode-wrapper idle-overlay"></div>
   }
 
-  <!-- 4. MODALE IMPOSTAZIONI -->
   <ion-modal
     [isOpen]="isSettingsOpen()"
     (willDismiss)="closeSettings()"
@@ -304,7 +311,9 @@
               <span class="tax-val">{{ player.commanderTax }}</span>
               <button class="tax-btn" (click)="updateTax(2, $event)">+</button>
             </div>
-            <span class="tax-info">Costo addizionale: {{ player.commanderTax }}</span>
+            <span class="tax-info"
+              >Costo addizionale: {{ player.commanderTax }}</span
+            >
           </div>
 
           <ion-button expand="block" class="save-btn" (click)="saveSettings()"

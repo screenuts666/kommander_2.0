@@ -1,4 +1,11 @@
-import { Component, Input, inject, computed, signal, OnDestroy } from '@angular/core';
+import {
+  Component,
+  Input,
+  inject,
+  computed,
+  signal,
+  OnDestroy,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Player, MTG_COLORS } from '../../models/game.model';
 import { GameService } from '../../services/game.service';
@@ -58,7 +65,6 @@ export class PlayerAreaComponent implements OnDestroy {
 
   public gameService = inject(GameService);
 
-  // Font Awesome Icons
   public faCrown = faCrown;
   public faShield = faShield;
   public faSkull = faSkull;
@@ -69,16 +75,12 @@ export class PlayerAreaComponent implements OnDestroy {
   public faCheck = faCheck;
   public faXmark = faXmark;
 
-  constructor() {
-    // No need to add icons for Font Awesome
-  }
-
   ngOnDestroy() {
-    // Reset settings modal when component is destroyed (navigation away)
     this.isSettingsOpen.set(false);
+    this.endHold(); // Pulisce i timer in caso di distruzione
   }
 
-  // Computed states for the template
+  // Computed states
   public isPartnerMode = computed(() => {
     const p = this.gameService.players().find((x) => x.id === this.player.id);
     return p ? !!p.hasPartner : false;
@@ -93,9 +95,7 @@ export class PlayerAreaComponent implements OnDestroy {
     return targetId !== null && this.player && targetId === this.player.id;
   });
 
-  public isSource = computed(() => {
-    return this.isDamageMode() && !this.isTarget();
-  });
+  public isSource = computed(() => this.isDamageMode() && !this.isTarget());
 
   public mainCommanderDamage = computed(() => {
     if (!this.isSource()) return 0;
@@ -117,7 +117,6 @@ export class PlayerAreaComponent implements OnDestroy {
     return targetPlayer?.partnerDamage?.[this.player.id] || 0;
   });
 
-  // Livello 2: Poison Mode
   public isPoisonModeActive = computed(
     () => this.gameService.poisonTargetMode() !== null,
   );
@@ -128,9 +127,8 @@ export class PlayerAreaComponent implements OnDestroy {
   );
   public isPoisonSource = computed(
     () => this.isPoisonModeActive() && !this.isPoisonTarget(),
-  ); // When one is editing poison, others darken
+  );
 
-  // Livello 2: Status
   public isMonarch = computed(
     () => this.gameService.monarchPlayerId() === this.player.id,
   );
@@ -144,15 +142,17 @@ export class PlayerAreaComponent implements OnDestroy {
     () => this.gameService.initiativePlayerId() !== null,
   );
 
-  // Livello 2: Settings local state
   public isSettingsOpen = signal(false);
   public tempName = signal('');
   public tempColor = signal('');
 
-  // Livello 3: UX Feedbacks and Gestures
+  // UX Feedback states
   public recentDelta = signal(0);
+  public deltaVisible = signal(false); // Aggiunto per forzare l'animazione ad ogni click
   private deltaTimer: any;
+
   private holdTimer: any;
+  private holdInterval: any; // Aggiunto per continuare l'incremento tenendo premuto
   private isHolding = false;
 
   get MTG_COLORS() {
@@ -177,28 +177,47 @@ export class PlayerAreaComponent implements OnDestroy {
 
   private trackDelta(delta: number) {
     this.recentDelta.update((v) => v + delta);
+
+    // Forza il ricaricamento del div in HTML per riavviare l'animazione
+    this.deltaVisible.set(false);
+    setTimeout(() => this.deltaVisible.set(true), 0);
+
     if (this.deltaTimer) clearTimeout(this.deltaTimer);
-    this.deltaTimer = setTimeout(() => this.recentDelta.set(0), 1500);
+    this.deltaTimer = setTimeout(() => {
+      this.recentDelta.set(0);
+      this.deltaVisible.set(false);
+    }, 1500);
   }
 
-  // Long press logic
+  // --- LOGICA LONG PRESS AGGIORNATA ---
   public startHold(delta: number) {
     this.isHolding = false;
-    this.holdTimer = setTimeout(async () => {
+
+    // Inizia la pressione lunga
+    this.holdTimer = setTimeout(() => {
       this.isHolding = true;
-      const bigDelta = delta * 10;
-      this.gameService.updatePlayerLife(this.player.id, bigDelta);
-      this.trackDelta(bigDelta);
-      await Haptics.impact({ style: ImpactStyle.Medium });
+      this.applyBigDelta(delta); // Primo scatto da 10
+
+      // Continua ad applicare ±10 ogni mezzo secondo finché è premuto
+      this.holdInterval = setInterval(() => {
+        this.applyBigDelta(delta);
+      }, 500);
     }, 800);
+  }
+
+  private async applyBigDelta(delta: number) {
+    const bigDelta = delta * 10;
+    this.gameService.updatePlayerLife(this.player.id, bigDelta);
+    this.trackDelta(bigDelta);
+    await Haptics.impact({ style: ImpactStyle.Medium });
   }
 
   public endHold() {
     if (this.holdTimer) clearTimeout(this.holdTimer);
+    if (this.holdInterval) clearInterval(this.holdInterval);
   }
 
   public handleTap(delta: number, event: Event) {
-    // If it was a long press, we don't trigger the single tap
     if (this.isHolding) {
       this.isHolding = false;
       return;
@@ -206,19 +225,19 @@ export class PlayerAreaComponent implements OnDestroy {
     if (delta > 0) this.increment();
     else this.decrement();
   }
+  // ------------------------------------
 
-  // Tax Logic
   updateTax(delta: number, event: Event) {
     event.stopPropagation();
     this.gameService.updateCommanderTax(this.player.id, delta);
   }
 
+  // ... (Tutto il resto dei metodi rimane inalterato: enterCommanderDamageMode, changePoisonDirect, ecc.)
+
   async enterCommanderDamageMode(event: Event) {
     event.stopPropagation();
     await Haptics.impact({ style: ImpactStyle.Medium });
-    if (this.player) {
-      this.gameService.setCommanderDamageTarget(this.player.id);
-    }
+    if (this.player) this.gameService.setCommanderDamageTarget(this.player.id);
   }
 
   async exitCommanderDamageMode(event: Event) {
@@ -249,13 +268,10 @@ export class PlayerAreaComponent implements OnDestroy {
     this.gameService.togglePartnerMode(this.player.id, event.detail.checked);
   }
 
-  // Poison Events
   async enterPoisonMode(event: Event) {
     event.stopPropagation();
     await Haptics.impact({ style: ImpactStyle.Medium });
-    if (this.player) {
-      this.gameService.setPoisonTargetMode(this.player.id);
-    }
+    if (this.player) this.gameService.setPoisonTargetMode(this.player.id);
   }
 
   async exitPoisonMode(event: Event) {
@@ -270,16 +286,10 @@ export class PlayerAreaComponent implements OnDestroy {
     this.gameService.updatePoison(this.player.id, delta);
   }
 
-  // Settings Events
   openSettings(event: Event) {
     event.stopPropagation();
-
-    // Rimuoviamo eventuale cache di "Player X" dai vecchi test
     let currentName = this.player.name;
-    if (currentName?.startsWith('Player ')) {
-      currentName = undefined;
-    }
-
+    if (currentName?.startsWith('Player ')) currentName = undefined;
     this.tempName.set(currentName || `GIOCATORE ${this.player.id}`);
     this.tempColor.set(this.player.color);
     this.isSettingsOpen.set(true);
@@ -301,7 +311,6 @@ export class PlayerAreaComponent implements OnDestroy {
   claimMonarch() {
     this.gameService.setMonarch(this.player.id);
   }
-
   claimInitiative() {
     this.gameService.setInitiative(this.player.id);
   }
@@ -326,7 +335,6 @@ export class PlayerAreaComponent implements OnDestroy {
   selectColor(color: string) {
     this.tempColor.set(color);
   }
-
   onNameChange(event: any) {
     this.tempName.set(event.detail.value);
   }
