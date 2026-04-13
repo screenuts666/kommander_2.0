@@ -5,7 +5,7 @@
 >
   <div class="player-header" [hidden]="isDamageMode() || isPoisonModeActive()">
     @if (isMonarch()) {
-      <ion-icon class="status-icon monarch-icon" name="star-outline"></ion-icon>
+      <mat-icon class="status-icon monarch-icon">crown</mat-icon>
     }
     @if (hasInitiative()) {
       <ion-icon
@@ -35,7 +35,7 @@
 
       @if (isMonarchInPlay() && !isMonarch()) {
         <div class="status-btn-wrapper monarch" (click)="claimMonarchMain($event)">
-          <ion-icon name="star-outline"></ion-icon>
+          <mat-icon>crown</mat-icon>
         </div>
       }
 

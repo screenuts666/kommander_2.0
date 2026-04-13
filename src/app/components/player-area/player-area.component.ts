@@ -23,12 +23,11 @@ import {
   heart,
   settingsOutline,
   skullOutline,
-  starOutline,
   flashOutline,
   closeOutline,
-  checkmarkCircle,
-} from 'ionicons/icons';
+  checkmarkCircle, starOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-player-area',
@@ -49,6 +48,7 @@ import { Haptics, ImpactStyle } from '@capacitor/haptics';
     IonToolbar,
     IonTitle,
     IonContent,
+    MatIconModule,
   ],
 })
 export class PlayerAreaComponent {
@@ -57,16 +57,16 @@ export class PlayerAreaComponent {
 
   public gameService = inject(GameService);
 
+
   constructor() {
     addIcons({
-      shieldHalfOutline,
-      chevronDownOutline,
-      heart,
+      flashOutline,
       settingsOutline,
       skullOutline,
+      shieldHalfOutline,
+      heart,
+      chevronDownOutline,
       closeOutline,
-      starOutline,
-      flashOutline,
       checkmarkCircle,
     });
   }
@@ -206,15 +206,17 @@ export class PlayerAreaComponent {
     this.gameService.updateCommanderTax(this.player.id, delta);
   }
 
-  enterCommanderDamageMode(event: Event) {
+  async enterCommanderDamageMode(event: Event) {
     event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Medium });
     if (this.player) {
       this.gameService.setCommanderDamageTarget(this.player.id);
     }
   }
 
-  exitCommanderDamageMode(event: Event) {
+  async exitCommanderDamageMode(event: Event) {
     event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Light });
     this.gameService.setCommanderDamageTarget(null);
   }
 
@@ -241,15 +243,17 @@ export class PlayerAreaComponent {
   }
 
   // Poison Events
-  enterPoisonMode(event: Event) {
+  async enterPoisonMode(event: Event) {
     event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Medium });
     if (this.player) {
       this.gameService.setPoisonTargetMode(this.player.id);
     }
   }
 
-  exitPoisonMode(event: Event) {
+  async exitPoisonMode(event: Event) {
     event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Light });
     this.gameService.setPoisonTargetMode(null);
   }
 
@@ -295,13 +299,15 @@ export class PlayerAreaComponent {
     this.gameService.setInitiative(this.player.id);
   }
 
-  claimMonarchMain(event: Event) {
+  async claimMonarchMain(event: Event) {
     event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Medium });
     this.claimMonarch();
   }
 
-  claimInitiativeMain(event: Event) {
+  async claimInitiativeMain(event: Event) {
     event.stopPropagation();
+    await Haptics.impact({ style: ImpactStyle.Medium });
     this.claimInitiative();
   }
 
