@@ -542,31 +542,30 @@
   }
 }
 
-/* Floating Hint Logic */
-.floating-hint {
+/* Delta Preview - Shows temporary +/- indicator */
+.delta-preview {
   position: absolute;
-  top: 45%;
+  top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   pointer-events: none;
-  font-size: 1.2rem;
+  font-size: 2rem;
   font-weight: 900;
   color: #4ade80; /* Success Green */
-  text-shadow: 0 0 12px rgba(74, 222, 128, 0.8), 0 2px 6px rgba(0,0,0,0.8);
+  text-shadow: 0 0 16px rgba(74, 222, 128, 0.9), 0 3px 8px rgba(0,0,0,0.9);
   z-index: 100;
-  animation: floatIn 0.8s ease-out forwards;
+  animation: deltaFade 2s ease-out forwards;
   
   &.negative {
     color: #f87171; /* Error Red */
-    text-shadow: 0 0 12px rgba(248, 113, 113, 0.8), 0 2px 6px rgba(0,0,0,0.8);
+    text-shadow: 0 0 16px rgba(248, 113, 113, 0.9), 0 3px 8px rgba(0,0,0,0.9);
   }
 }
 
-@keyframes floatIn {
-  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
-  30% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-  70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+@keyframes deltaFade {
+  0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
 }
 
 /* Commander Tax UI */

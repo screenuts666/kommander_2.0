@@ -82,8 +82,8 @@
     ></div>
 
     @if (recentDelta() !== 0) {
-      <div class="floating-hint" [class.negative]="player.life + recentDelta() < 0">
-        {{ player.life + recentDelta() }}
+      <div class="delta-preview" [class.negative]="recentDelta() < 0">
+        {{ recentDelta() > 0 ? '+' : '' }}{{ recentDelta() }}
       </div>
     }
   </div>
