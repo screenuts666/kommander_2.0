@@ -16,18 +16,19 @@ import {
   IonTitle,
   IonContent,
 } from '@ionic/angular/standalone';
-import { addIcons } from 'ionicons';
-import {
-  shieldHalfOutline,
-  chevronDownOutline,
-  heart,
-  settingsOutline,
-  skullOutline,
-  flashOutline,
-  closeOutline,
-  checkmarkCircle, starOutline } from 'ionicons/icons';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { MatIconModule } from '@angular/material/icon';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  faCrown,
+  faShield,
+  faSkull,
+  faCog,
+  faHeart,
+  faChevronDown,
+  faCheck,
+  faXmark,
+  faBoltLightning,
+} from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-player-area',
@@ -48,7 +49,7 @@ import { MatIconModule } from '@angular/material/icon';
     IonToolbar,
     IonTitle,
     IonContent,
-    MatIconModule,
+    FontAwesomeModule,
   ],
 })
 export class PlayerAreaComponent {
@@ -57,18 +58,19 @@ export class PlayerAreaComponent {
 
   public gameService = inject(GameService);
 
+  // Font Awesome Icons
+  public faCrown = faCrown;
+  public faShield = faShield;
+  public faSkull = faSkull;
+  public faCog = faCog;
+  public faBoltLightning = faBoltLightning;
+  public faHeart = faHeart;
+  public faChevronDown = faChevronDown;
+  public faCheck = faCheck;
+  public faXmark = faXmark;
 
   constructor() {
-    addIcons({
-      flashOutline,
-      settingsOutline,
-      skullOutline,
-      shieldHalfOutline,
-      heart,
-      chevronDownOutline,
-      closeOutline,
-      checkmarkCircle,
-    });
+    // No need to add icons for Font Awesome
   }
 
   // Computed states for the template
@@ -266,13 +268,13 @@ export class PlayerAreaComponent {
   // Settings Events
   openSettings(event: Event) {
     event.stopPropagation();
-    
+
     // Rimuoviamo eventuale cache di "Player X" dai vecchi test
     let currentName = this.player.name;
     if (currentName?.startsWith('Player ')) {
       currentName = undefined;
     }
-    
+
     this.tempName.set(currentName || `GIOCATORE ${this.player.id}`);
     this.tempColor.set(this.player.color);
     this.isSettingsOpen.set(true);

@@ -5,22 +5,22 @@
 >
   <div class="player-header" [hidden]="isDamageMode() || isPoisonModeActive()">
     @if (isMonarch()) {
-      <mat-icon class="status-icon monarch-icon">crown</mat-icon>
+      <fa-icon class="status-icon monarch-icon" [icon]="faCrown"></fa-icon>
     }
     @if (hasInitiative()) {
-      <ion-icon
+      <fa-icon
         class="status-icon initiative-icon"
-        name="flash-outline"
-      ></ion-icon>
+        [icon]="faBoltLightning"
+      ></fa-icon>
     }
     <span class="player-name">{{
       player.name || "GIOCATORE " + player.id
     }}</span>
-    <ion-icon
+    <fa-icon
       class="settings-trigger"
-      name="settings-outline"
+      [icon]="faCog"
       (click)="openSettings($event)"
-    ></ion-icon>
+    ></fa-icon>
   </div>
 
   <!-- 1. MODALITÀ NORMALE -->
@@ -28,27 +28,27 @@
     <div class="action-buttons-container">
       @if (player.poison > 0) {
         <div class="poison-btn-wrapper" (click)="enterPoisonMode($event)">
-          <ion-icon name="skull-outline"></ion-icon>
+          <fa-icon [icon]="faSkull"></fa-icon>
           <span class="poison-badge">{{ player.poison }}</span>
         </div>
       }
 
       @if (isMonarchInPlay() && !isMonarch()) {
         <div class="status-btn-wrapper monarch" (click)="claimMonarchMain($event)">
-          <mat-icon>crown</mat-icon>
+          <fa-icon [icon]="faCrown"></fa-icon>
         </div>
       }
 
       @if (isInitiativeInPlay() && !hasInitiative()) {
         <div class="status-btn-wrapper initiative" (click)="claimInitiativeMain($event)">
-          <ion-icon name="flash-outline"></ion-icon>
+          <fa-icon [icon]="faBoltLightning"></fa-icon>
         </div>
       }
       <div
         class="commander-btn-wrapper"
         (click)="enterCommanderDamageMode($event)"
       >
-        <ion-icon name="shield-half-outline"></ion-icon>
+        <fa-icon [icon]="faShield"></fa-icon>
       </div>
     </div>
 
@@ -74,8 +74,8 @@
     ></div>
 
     @if (recentDelta() !== 0) {
-      <div class="floating-hint" [class.negative]="recentDelta() < 0">
-        {{ recentDelta() > 0 ? '+' : '' }}{{ recentDelta() }}
+      <div class="floating-hint" [class.negative]="player.life + recentDelta() < 0">
+        {{ player.life + recentDelta() }}
       </div>
     }
   </div>
@@ -91,11 +91,11 @@
       </div>
       <div class="target-bottom-bar">
         <div class="life-reminder">
-          <ion-icon name="heart"></ion-icon>
+          <fa-icon [icon]="faHeart"></fa-icon>
           <span>{{ player.life }}</span>
         </div>
         <div class="exit-btn" (click)="exitCommanderDamageMode($event)">
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <fa-icon [icon]="faChevronDown"></fa-icon>
         </div>
       </div>
     </div>
@@ -196,11 +196,11 @@
 
       <div class="target-bottom-bar">
         <div class="life-reminder" style="opacity: 0.3">
-          <ion-icon name="skull"></ion-icon>
+          <fa-icon [icon]="faSkull"></fa-icon>
           <span>{{ player.poison }}</span>
         </div>
         <div class="exit-btn poison-exit" (click)="exitPoisonMode($event)">
-          <ion-icon name="chevron-down-outline"></ion-icon>
+          <fa-icon [icon]="faChevronDown"></fa-icon>
         </div>
       </div>
     </div>
@@ -222,7 +222,7 @@
           <ion-title>Impostazioni</ion-title>
           <ion-buttons slot="end">
             <ion-button (click)="closeSettings()"
-              ><ion-icon name="close-outline"></ion-icon
+              ><fa-icon [icon]="faXmark"></fa-icon
             ></ion-button>
           </ion-buttons>
         </ion-toolbar>
