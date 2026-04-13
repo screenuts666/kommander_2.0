@@ -44,12 +44,14 @@
           <fa-icon [icon]="faBoltLightning"></fa-icon>
         </div>
       }
-      <div
-        class="commander-btn-wrapper"
-        (click)="enterCommanderDamageMode($event)"
-      >
-        <fa-icon [icon]="faShield"></fa-icon>
-      </div>
+      @if (!isDamageMode() && !isPoisonModeActive()) {
+        <div
+          class="commander-btn-wrapper"
+          (click)="enterCommanderDamageMode($event)"
+        >
+          <fa-icon [icon]="faShield"></fa-icon>
+        </div>
+      }
     </div>
 
     <!-- Tzone -->
