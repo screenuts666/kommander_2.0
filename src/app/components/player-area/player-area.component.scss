@@ -50,21 +50,50 @@
 
 .life-display {
   position: absolute;
-  pointer-events: none; /* Allows clicks to pass through to the touch zones */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
   text-align: center;
   color: white;
   text-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .life-total {
   font-size: 6.5rem;
   font-weight: 800;
   font-family: Inter, Roboto, "Helvetica Neue", sans-serif;
-  line-height: +1;
-  text-shadow: 0px 8px 18px rgba(0, 0, 0, 0.7); /* Shadow maggiorato per far saltare fuori il bianco */
+  line-height: 1;
+  text-shadow: 0px 8px 18px rgba(0, 0, 0, 0.7);
+}
+
+.commander-tax-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  
+  .tax-icon {
+    font-size: 0.8rem;
+    opacity: 0.7;
+  }
+  
+  .tax-value {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
 }
 
 .touch-zone {
@@ -164,6 +193,12 @@
 .status-btn-wrapper {
   &.monarch { color: #facc15; }
   &.initiative { color: #22d3ee; }
+  
+  /* Greyed out when status already claimed */
+  &:not(.monarch):not(.initiative) {
+    opacity: 0.4;
+    filter: grayscale(100%);
+  }
 }
 
 .poison-btn-wrapper {
@@ -193,18 +228,13 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 32px 24px;
-  background-color: inherit; /* adopts player color */
-  background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.4)); /* Adds depth but maintains opacity */
+  align-items: center;
+  padding: 20px 16px;
+  background-color: rgba(0, 0, 0, 0.92);
+  background-image: none;
   
-  /* Ensure a solid fallback to hide everything below */
   &::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: inherit;
-    z-index: -1;
-    filter: brightness(0.8); /* Slightly darker to distinguish the mode */
+    display: none;
   }
 }
 
@@ -213,22 +243,17 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
+  margin-top: 0;
 
   .target-name {
-    font-size: 1.6rem;
-    font-weight: 800;
+    font-size: 1.2rem;
+    font-weight: 700;
     color: white;
     letter-spacing: 1px;
     text-transform: uppercase;
   }
   .target-subtitle {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: rgba(255, 255, 255, 0.8);
-    margin-top: 8px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    display: none;
   }
 }
 
@@ -304,21 +329,21 @@
 .damage-pill {
   display: flex;
   align-items: center;
-  background: rgba(10, 10, 10, 0.8);
-  border-radius: 40px;
-  border: 1px solid rgba(255,255,255, 0.2);
-  padding: 6px;
-  width: 220px;
-  height: 70px;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  backdrop-filter: blur(8px);
+  background: rgba(10, 10, 10, 0.95);
+  border-radius: 32px;
+  border: 1px solid rgba(255,255,255, 0.3);
+  padding: 4px;
+  width: 160px;
+  height: 52px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+  backdrop-filter: none;
   
   .pill-btn {
     background: transparent;
     border: none;
     color: white;
-    font-size: 2.2rem;
-    width: 70px;
+    font-size: 1.6rem;
+    width: 50px;
     height: 100%;
     cursor: pointer;
     display: flex;
@@ -334,34 +359,34 @@
     flex: 1;
     text-align: center;
     color: white;
-    font-size: 2.6rem;
+    font-size: 1.8rem;
     font-weight: 800;
   }
 }
 
 .damage-pill-split {
   display: flex;
-  gap: 12px;
-  width: 260px;
-  height: 64px;
+  gap: 10px;
+  width: 190px;
+  height: 52px;
 
   .split-half {
     flex: 1;
     display: flex;
     align-items: center;
-    background: rgba(10, 10, 10, 0.8);
-    border-radius: 32px;
-    border: 1px solid rgba(255,255,255, 0.2);
-    padding: 4px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    backdrop-filter: blur(8px);
+    background: rgba(10, 10, 10, 0.95);
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255, 0.3);
+    padding: 3px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.7);
+    backdrop-filter: none;
 
     .pill-btn {
       background: transparent;
       border: none;
       color: white;
-      font-size: 1.8rem;
-      width: 40px;
+      font-size: 1.4rem;
+      width: 35px;
       height: 100%;
       cursor: pointer;
       display: flex;
@@ -377,7 +402,7 @@
       flex: 1;
       text-align: center;
       color: white;
-      font-size: 2rem;
+      font-size: 1.5rem;
       font-weight: 800;
     }
   }
@@ -396,13 +421,18 @@
  * ------------------------------------- */
 
 .poison-theme {
-  background: rgba(15, 30, 15, 0.95);
-  box-shadow: inset 0 0 100px rgba(77, 124, 15, 0.4);
-  .target-name { color: #84cc16; }
-  .poison-val { color: #bef264; }
+  background: rgba(0, 0, 0, 0.95) !important;
+  box-shadow: none;
+  .target-name { 
+    color: #a3e635; 
+    font-size: 1.2rem;
+  }
+  .poison-val { color: #a3e635; }
   .poison-exit {
-    background: #4d7c0f; border: 1px solid #65a30d;
-    &:active { background: #65a30d; }
+    background: rgba(163, 230, 53, 0.2); 
+    border: 1px solid rgba(163, 230, 53, 0.5);
+    color: #a3e635;
+    &:active { background: rgba(163, 230, 53, 0.4); }
   }
 }
 

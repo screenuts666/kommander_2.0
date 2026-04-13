@@ -63,6 +63,12 @@
     ></div>
     <div class="life-display">
       <span class="life-total">{{ player.life }}</span>
+      @if (player.commanderTax && player.commanderTax > 0) {
+        <div class="commander-tax-badge">
+          <fa-icon [icon]="faCog" class="tax-icon"></fa-icon>
+          <span class="tax-value">{{ player.commanderTax }}</span>
+        </div>
+      }
     </div>
     <div 
       class="touch-zone minus" 
@@ -173,7 +179,6 @@
     <div class="target-mode-wrapper poison-theme">
       <div class="target-header">
         <span class="target-name">DANNO DA VELENO</span>
-        <span class="target-subtitle">MODIFICA SEGNALINI</span>
       </div>
 
       <div class="mode-content-center">
@@ -197,7 +202,6 @@
       <div class="target-bottom-bar">
         <div class="life-reminder" style="opacity: 0.3">
           <fa-icon [icon]="faSkull"></fa-icon>
-          <span>{{ player.poison }}</span>
         </div>
         <div class="exit-btn poison-exit" (click)="exitPoisonMode($event)">
           <fa-icon [icon]="faChevronDown"></fa-icon>
