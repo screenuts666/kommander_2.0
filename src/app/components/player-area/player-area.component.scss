@@ -23,7 +23,6 @@
   /* CRITICAL UX FIXES for double tap zoom and text selection */
   user-select: none;
   -webkit-user-select: none;
-  touch-action: none;
   box-sizing: border-box;
 }
 
@@ -102,6 +101,8 @@
   cursor: pointer;
   transition: background-color 0.15s ease;
   z-index: 10;
+  pointer-events: auto;
+  touch-action: auto;
 }
 
 .touch-zone.plus:active {
@@ -134,8 +135,8 @@
   .status-icon {
     font-size: 20px;
     filter: drop-shadow(0 2px 4px rgba(0,0,0,0.8));
-    &.monarch-icon { color: #facc15; }
-    &.initiative-icon { color: #22d3ee; }
+    &.monarch-icon { color: inherit; }
+    &.initiative-icon { color: inherit; }
   }
 
   .player-name {

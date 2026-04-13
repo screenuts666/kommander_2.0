@@ -1,4 +1,4 @@
-import { Component, Input, inject, computed, signal } from '@angular/core';
+import { Component, Input, inject, computed, signal, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Player, MTG_COLORS } from '../../models/game.model';
 import { GameService } from '../../services/game.service';
@@ -52,7 +52,7 @@ import {
     FontAwesomeModule,
   ],
 })
-export class PlayerAreaComponent {
+export class PlayerAreaComponent implements OnDestroy {
   @Input({ required: true }) player!: Player;
   @Input() extraClass: string = '';
 
@@ -71,6 +71,11 @@ export class PlayerAreaComponent {
 
   constructor() {
     // No need to add icons for Font Awesome
+  }
+
+  ngOnDestroy() {
+    // Reset settings modal when component is destroyed (navigation away)
+    this.isSettingsOpen.set(false);
   }
 
   // Computed states for the template
